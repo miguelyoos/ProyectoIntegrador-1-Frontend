@@ -1,5 +1,7 @@
 # ProyectoIntegrador-1-Frontend
 Front-end con Vite + React
+### npm run dev para inicializarlo
+
 ## Perfiles de usuario 
 
 Perfil 1 – Alejandra
