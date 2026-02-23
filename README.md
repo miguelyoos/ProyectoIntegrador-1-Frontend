@@ -2,7 +2,7 @@
 Front-end con Vite + React
 ## Perfiles de usuario 
 
-Perfil 1 – Alejandra
+Perfil 1 – Alejandraa
 Contexto:Una estudiante estudia en horario diurno de lunes a viernes y trabaja de manera nocturna , ocupa espacios en la tarde y en la noche para estudiar
 Objetivo: Organizar maneras mas eficientes para dividir su tiempo y que logre completar las tareas y deberes de la universidad 
 Frustración: No logra encontrar un equilibrio entre su trabajo y sus deberes de la universidad
