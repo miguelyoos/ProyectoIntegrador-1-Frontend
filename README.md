@@ -1,8 +1,12 @@
 # Planificador de Estudio – Frontend
 
+## 🚧 Estado: En Desarrollo
+
+Este proyecto se encuentra actualmente en fase de desarrollo. La estructura base está implementada pero el diseño visual está pendiente de implementación.
+
 ## Descripción
 
-Aplicación web (SPA) construida con React que permite gestionar actividades evaluativas, visualizar prioridades en la vista "Hoy" y registrar progreso. Este frontend se conecta con una API REST (Django REST Framework) mediante peticiones HTTP.
+Aplicación web (SPA) construida con React que permitirá gestionar actividades evaluativas, visualizar prioridades en la vista "Hoy" y registrar progreso. Este frontend se conectará con una API REST (Django REST Framework) mediante peticiones HTTP.
 
 ## Arquitectura
 
@@ -109,13 +113,12 @@ El frontend consume la API mediante funciones configuradas en `services/api.js`.
 ## Estado actual – Sprint 0
 
 - ✅ Base técnica configurada (React + Vite)
-- ✅ SPA con rutas mínimas implementadas
-- ✅ Vista `/hoy` funcional con gestión de tareas
-- ✅ Vista `/progreso` con estadísticas
-- ✅ Formulario de creación de actividades con calendario
-- ✅ Login simulado (sin autenticación real)
-- ✅ Diseño responsive con esquema blanco y negro
-- ✅ Navegación con iconos profesionales
+- ✅ Estructura de carpetas y archivos organizada
+- ✅ Sistema de rutas implementado (React Router)
+- ✅ Componentes base creados (sin diseño visual)
+- ✅ Servicio API con LocalStorage configurado
+- ⏳ Diseño visual (pendiente de implementación)
+- ⏳ Funcionalidad completa de componentes (pendiente)
 - ⏳ Conexión con backend real (pendiente)
 
 ## Consideraciones de accesibilidad
@@ -128,46 +131,44 @@ El frontend consume la API mediante funciones configuradas en `services/api.js`.
 - Iconos con significado visual claro
 - Responsive design para diferentes dispositivos
 
-## Características principales
+## Características planificadas
 
-### Diseño
-- Esquema de colores minimalista (blanco y negro)
+### Diseño (Pendiente)
 - Interfaz limpia y profesional
 - Totalmente responsive (desktop, tablet, móvil)
-- Iconos SVG para mejor rendimiento
+- Esquema de colores a definir según boceto
 
-### Funcionalidades
+### Funcionalidades (En desarrollo)
 - Gestión completa de actividades (CRUD)
 - Visualización de tareas por día
 - Marcado de tareas completadas/pendientes
 - Estadísticas de progreso
-- Calendario profesional para selección de fechas
-- Persistencia local de datos
+- Calendario para selección de fechas
+- Persistencia de datos (actualmente LocalStorage)
 
-### Experiencia de usuario
+### Experiencia de usuario (Planificada)
 - Navegación intuitiva
 - Feedback visual en interacciones
 - Estados de carga y vacío
 - Confirmaciones para acciones destructivas
-- Transiciones suaves
 
 ## Tecnologías utilizadas
 
 - React 18
 - Vite
 - React Router DOM
-- React DatePicker
-- CSS-in-JS (inline styles)
+- CSS básico (estilos pendientes de implementación)
 
 ## Próximos pasos
 
-1. Integrar con backend Django REST Framework
-2. Implementar autenticación real con JWT
-3. Agregar manejo de errores robusto
-4. Implementar tests unitarios
-5. Optimizar rendimiento
-6. Agregar más filtros y vistas
-7. Implementar notificaciones
+1. Implementar diseño visual según boceto
+2. Completar funcionalidad de todos los componentes
+3. Integrar con backend Django REST Framework
+4. Implementar autenticación real con JWT
+5. Agregar manejo de errores robusto
+6. Implementar tests unitarios
+7. Optimizar rendimiento
+8. Agregar más filtros y vistas
 
 ## Perfiles de usuario
 
