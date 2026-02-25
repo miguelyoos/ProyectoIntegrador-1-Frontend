@@ -9,6 +9,7 @@ import Progreso from '../pages/Progreso';
 export default function Router() {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 
+
   return (
     <BrowserRouter>
       <Routes>
