@@ -1,5 +1,11 @@
 // Simulación de API con localStorage
 const STORAGE_KEY = 'actividades';
+const API_URL = "http://localhost:8000/api";
+
+export async function testConnection() {
+  const response = await fetch(`${API_URL}/test/`);
+  return response.json();
+}
 
 const getActividades = () => {
   const data = localStorage.getItem(STORAGE_KEY);
