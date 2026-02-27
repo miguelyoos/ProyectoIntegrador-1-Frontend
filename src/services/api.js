@@ -1,9 +1,9 @@
 // Simulación de API con localStorage
 const STORAGE_KEY = 'actividades';
-const API_URL = "http://localhost:8000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function testConnection() {
-  const response = await fetch(`${API_URL}/test/`);
+  const response = await fetch(`${API_URL}/api/test/`);
   return response.json();
 }
 
