@@ -1,0 +1,167 @@
+.subtask-chip {
+  font-size: 11px;
+  font-weight: 600;
+  background: #f0ede8;
+  color: #666;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.subtask-chip.has {
+  background: var(--purple-light);
+  color: var(--purple);
+}
+
+.subtasks-panel {
+  border-top: 1px solid var(--border);
+  padding: 16px 18px 16px 36px;
+  background: #fdfcfb;
+  border-radius: 0 0 12px 12px;
+  display: none;
+}
+
+.subtasks-panel.open {
+  display: block;
+}
+
+.subtasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.subtasks-header span {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-add-subtask {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--purple);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-add-subtask:hover {
+  opacity: 0.85;
+}
+
+.subtask-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.subtask-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  padding: 9px 12px;
+  transition: box-shadow 0.15s;
+}
+
+.subtask-row:hover {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+.subtask-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid #ccc;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.subtask-check.done {
+  background: var(--purple);
+  border-color: var(--purple);
+}
+
+.subtask-check.done::after {
+  content: '✓';
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.subtask-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtask-name.done {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.subtask-meta {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  display: flex;
+  gap: 8px;
+}
+
+.subtask-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.subtask-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #bbb;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  transition: background 0.12s, color 0.12s;
+}
+
+.subtask-icon-btn:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.subtask-icon-btn.del:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.subtask-empty {
+  font-size: 12px;
+  color: #bbb;
+  text-align: center;
+  padding: 12px 0;
+}

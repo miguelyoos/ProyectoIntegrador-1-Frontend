@@ -1,0 +1,55 @@
+.sub-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 150;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s;
+}
+
+.sub-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.sub-modal {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 28px 28px 24px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.18);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sub-overlay.open .sub-modal {
+  transform: translateY(0) scale(1);
+}
+
+.sub-modal h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.sub-parent {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.sub-parent strong {
+  color: var(--purple);
+}
+
+.sub-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}

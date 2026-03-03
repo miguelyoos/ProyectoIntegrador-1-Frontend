@@ -1,0 +1,171 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Planificador */
+  --purple: #7c5af5;
+  --purple-light: #ede9fe;
+  --bg: #f7f7f8;
+  --white: #ffffff;
+  --border: #e8e5e0;
+  --text: #111;
+  --muted: #888;
+
+  /* Login */
+  --violet: #7B5CE5;
+  --violet-dark: #6347CC;
+  --ink: #0F0E17;
+  --error: #E5534B;
+  --success: #2ECC71;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+}
+
+/* Shared form elements */
+input[type="text"],
+input[type="date"],
+textarea,
+select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: #faf9f7;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #bbb;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(124, 90, 245, 0.1);
+  background: var(--white);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Shared badge styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-tipo   { background: #ede9fe; color: #6040e8; }
+.badge-alta   { background: #fee2e2; color: #dc2626; }
+.badge-media  { background: #fef3c7; color: #d97706; }
+.badge-baja   { background: #d1fae5; color: #059669; }
+.badge-urgente { background: #ffe4e6; color: #e11d48; }
+
+/* Shared button base */
+.btn {
+  padding: 13px;
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s, opacity 0.15s;
+}
+.btn:active { transform: scale(0.98); }
+.btn-cancel  { background: #f0ede8; color: #444; }
+.btn-cancel:hover { background: #e5e1da; }
+.btn-primary { background: var(--purple); color: white; }
+.btn-primary:hover { opacity: 0.88; }
+.btn-danger  { background: #ef4444; color: white; }
+.btn-danger:hover { opacity: 0.88; }
+
+/* Shared field validation */
+.field-error input,
+.field-error textarea,
+.field-error select {
+  border-color: #ef4444 !important;
+  background: #fff8f8 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+.field-error .spinner-wrap {
+  border-color: #ef4444 !important;
+  background: #fff8f8 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+.field-error label { color: #dc2626; }
+
+.field-hint {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 5px;
+  line-height: 1.4;
+}
+.field-error .field-hint { display: none; }
+
+.field-error-msg {
+  display: none;
+  font-size: 11.5px;
+  color: #dc2626;
+  margin-top: 5px;
+  line-height: 1.4;
+  align-items: flex-start;
+  gap: 4px;
+}
+.field-error-msg::before {
+  content: '⚠';
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.field-error .field-error-msg { display: flex; }
+
+.field-success input,
+.field-success textarea,
+.field-success select {
+  border-color: #10b981 !important;
+}
+.field-success .spinner-wrap { border-color: #10b981 !important; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-5px); }
+  40%       { transform: translateX(5px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+.shake { animation: shake 0.38s ease; }
+
+.form-error-banner {
+  display: none;
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: #b91c1c;
+  font-weight: 500;
+}
+.form-error-banner.show { display: block; }
