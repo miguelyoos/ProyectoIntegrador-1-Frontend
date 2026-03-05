@@ -1,10 +1,11 @@
-import React from 'react';
-import './NavBar.css';
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import "./NavBar.css";
 
 const TABS = [
   {
-    key: 'dashboard',
-    label: 'Dashboard',
+    key: "/dashboard",
+    label: "Dashboard",
     icon: (
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="3" width="7" height="7" />
@@ -15,8 +16,8 @@ const TABS = [
     ),
   },
   {
-    key: 'actividades',
-    label: 'Actividades',
+    key: "/hoy",
+    label: "Actividades",
     icon: (
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
         <line x1="8" y1="6" x2="21" y2="6" />
@@ -26,8 +27,8 @@ const TABS = [
     ),
   },
   {
-    key: 'calendario',
-    label: 'Calendario',
+    key: "/calendario",
+    label: "Calendario",
     icon: (
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -35,18 +36,21 @@ const TABS = [
         <line x1="8" y1="2" x2="8" y2="6" />
         <line x1="3" y1="10" x2="21" y2="10" />
       </svg>
-    ), 
+    ),
   },
 ];
 
-export default function NavBar({ activeTab, onTabChange }) {
+export default function NavBar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <nav className="navbar">
       {TABS.map(tab => (
         <button
           key={tab.key}
-          className={`nav-tab${activeTab === tab.key ? ' active' : ''}`}
-          onClick={() => onTabChange(tab.key)}
+          className={`nav-tab${location.pathname === tab.key ? " active" : ""}`}
+          onClick={() => navigate(tab.key)}
         >
           {tab.icon}
           {tab.label}

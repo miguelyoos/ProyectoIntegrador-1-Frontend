@@ -17,10 +17,10 @@ function isValidEmail(v) {
 }
 
 function getEmailError(v) {
-  if (!v)                               return 'Necesitamos tu correo para saber quién sos.';
-  // if (!v.includes('@'))                 return 'Falta el @. Ej: tu@correo.com';
-  // if (v.endsWith('@'))                  return 'Falta el dominio después del @. Ej: tu@correo.com';
-  // if (!v.split('@')[1]?.includes('.'))  return 'El dominio parece incompleto. Ej: tu@correo.com';
+  if (!v)                               return 'Necesitamos tu correo para saber tu identidad.';
+  if (!v.includes('@'))                 return 'Falta el @. Ej: tu@correo.com';
+  if (v.endsWith('@'))                  return 'Falta el dominio después del @. Ej: tu@correo.com';
+  if (!v.split('@')[1]?.includes('.'))  return 'El dominio parece incompleto. Ej: tu@correo.com';
   return 'Revisá el formato. Ej: tu@correo.com';
 }
 
@@ -85,8 +85,8 @@ export default function LoginPage({ onLoginSuccess }) {
   // ── Blur handlers ───────────────────────────────────────────
   function handleEmailBlur() {
     const v = email.trim();
-    // if (!isValidEmail(v)) setEmailError(getEmailError(v));
-    // else setEmailError('');
+    if (!isValidEmail(v)) setEmailError(getEmailError(v));
+    else setEmailError('');
   }
 
   function handlePasswordBlur() {
@@ -126,8 +126,8 @@ export default function LoginPage({ onLoginSuccess }) {
     let valid = true;
 
     const eErr = isValidEmail(emailVal) ? '' : getEmailError(emailVal);
-    // if (eErr) { setEmailError(eErr); valid = false; }
-    // else setEmailError('');
+    if (eErr) { setEmailError(eErr); valid = false; }
+    else setEmailError('');
 
     const pErr = getPasswordError(pwVal);
     if (pErr) { setPasswordError(pErr); valid = false; }

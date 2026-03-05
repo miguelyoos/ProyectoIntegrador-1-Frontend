@@ -19,9 +19,9 @@ export default function SubtaskModal({ open, parentActivity, editingSubtask, onC
     clearAll(SUB_FIELDS);
     setBannerMsg('');
     if (editingSubtask) {
-      setNombre(editingSubtask.nombre);
-      setFecha(editingSubtask.fecha);
-      setHoras(editingSubtask.horas);
+      setNombre(editingSubtask.nombre || "");
+      setFecha(editingSubtask.fecha || "");
+      setHoras(editingSubtask.horas || "");
     } else {
       setNombre(''); setFecha(''); setHoras('');
     }

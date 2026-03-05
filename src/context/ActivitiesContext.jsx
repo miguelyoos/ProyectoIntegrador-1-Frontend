@@ -120,28 +120,35 @@ export function ActivitiesProvider({ children }) {
 
   // 🔹 Crear subtarea
   async function addSubtask(activityId, subtask) {
-    try {
-      const nueva = await crearSubtarea({
-        ...subtask,
-        actividadId: activityId,
-      });
+  try {
+    const nueva = await crearSubtarea({
+      ...subtask,
+      actividadId: activityId,
+    });
 
-      setActivities((prev) =>
-        prev.map((a) =>
-          a.id === activityId
-            ? {
-                ...a,
-                subtasks: [...(a.subtasks || []), nueva],
-              }
-            : a
-        )
-      );
+    const subtaskConId = {
+      ...nueva,
+      id: nueva.id || crypto.randomUUID(),
+      done: nueva.done ?? false,
+    };
 
-      setExpandedCards((prev) => new Set(prev).add(activityId));
-    } catch (error) {
-      console.error("Error creando subtarea", error);
-    }
+    setActivities((prev) =>
+      prev.map((a) =>
+        a.id === activityId
+          ? {
+              ...a,
+              subtasks: [...(a.subtasks || []), subtaskConId],
+            }
+          : a
+      )
+    );
+
+    setExpandedCards((prev) => new Set(prev).add(activityId));
+
+  } catch (error) {
+    console.error("Error creando subtarea", error);
   }
+}
 
   // 🔹 Actualizar subtarea (local)
   function updateSubtask(activityId, subtaskId, data) {
