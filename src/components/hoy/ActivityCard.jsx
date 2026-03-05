@@ -5,13 +5,13 @@ import SubtasksPanel from './SubtasksPanel';
 import './ActivityCard.css';
 
 const ESTADO_ICON = { completada: '✅', progreso: '🔄', pendiente: '⏳' };
-
+  
 export default function ActivityCard({ activity, onEdit, onDelete, onAddSubtask, onEditSubtask }) {
   const { expandedCards, toggleExpand } = useActivities();
   const isExpanded = expandedCards.has(activity.id);
 
   const color = PRIO_COLORS[activity.prioridad] || '#888';
-  const prioClass = 'badge badge-' + activity.prioridad.toLowerCase();
+  const prioClass = 'badge badge-' + (activity.prioridad || "").toLowerCase()
   const pct = activity.horasEst > 0
     ? Math.min(100, Math.round((activity.horasComp / activity.horasEst) * 100))
     : 0;

@@ -1,13 +1,16 @@
-import { Outlet } from 'react-router-dom';
-import Navbar from './Navbar';
+import Header from "./Header";
+import NavBar from "./NavBar";
+import { Outlet } from "react-router-dom";
+import { useState } from "react";
 
 export default function Layout() {
+  const [activeTab, setActiveTab] = useState("actividades");
+
   return (
-    <div>
-      <Navbar />
-      <main>
-        <Outlet />
-      </main>
-    </div>
+    <>
+      <Header userEmail="usuario@email.com" />
+      <NavBar activeTab={activeTab} onTabChange={setActiveTab} />
+      <Outlet />
+    </>
   );
 }

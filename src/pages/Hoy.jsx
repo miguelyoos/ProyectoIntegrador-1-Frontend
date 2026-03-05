@@ -11,7 +11,8 @@ import './Hoy.css';
 
 export default function Hoy() {
   const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask } = useActivities();
-
+  
+  
   // Filter state
   const [search, setSearch] = useState('');
   const [tipo, setTipo] = useState(null);

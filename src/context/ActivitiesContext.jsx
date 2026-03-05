@@ -1,4 +1,16 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
+
+import {
+  obtenerActividades,
+  crearActividad,
+  actualizarActividad,
+  eliminarActividad,
+} from "../services/actividadesService";
+
+import {
+  obtenerSubtareas,
+  crearSubtarea,
+} from "../services/subtareasService";
 
 const ActivitiesContext = createContext(null);
 
@@ -6,47 +18,118 @@ export function ActivitiesProvider({ children }) {
   const [activities, setActivities] = useState([]);
   const [expandedCards, setExpandedCards] = useState(new Set());
 
-  function addActivity(data) {
-    setActivities(prev => [...prev, { id: Date.now(), subtasks: [], ...data }]);
+  // 🔹 Cargar actividades y sus subtareas
+  useEffect(() => {
+    console.log("Cargando actividades...");
+    async function cargarActividades() {
+      
+      try {
+        const acts = await obtenerActividades();
+
+        const actsConSubtareas = await Promise.all(
+  acts.map(async (a) => {
+    const subtareas = await obtenerSubtareas(a.id);
+    console.log("subtareas de", a.titulo, subtareas); // ← agrega esto
+    return { ...a, subtasks: subtareas };
+  })
+);
+        
+
+        setActivities(actsConSubtareas);
+      } catch (error) {
+        console.error("Error cargando actividades", error);
+      }
+    }
+
+    cargarActividades();
+  }, []);
+
+  // 🔹 Crear actividad
+  async function addActivity(data) {
+    try {
+      const nueva = await crearActividad(data);
+
+      setActivities((prev) => [
+        ...prev,
+        { ...nueva, subtasks: [] }
+      ]);
+    } catch (error) {
+      console.error("Error creando actividad", error);
+    }
+  }
+  
+
+  // 🔹 Actualizar actividad
+  async function updateActivity(id, data) {
+    try {
+      const actualizada = await actualizarActividad(id, data);
+
+      setActivities((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, ...actualizada } : a))
+      );
+    } catch (error) {
+      console.error("Error actualizando actividad", error);
+    }
   }
 
-  function updateActivity(id, data) {
-    setActivities(prev =>
-      prev.map(a => (a.id === id ? { ...a, ...data } : a))
-    );
+  // 🔹 Eliminar actividad
+  async function deleteActivity(id) {
+    try {
+      await eliminarActividad(id);
+
+      setActivities((prev) =>
+        prev.filter((a) => a.id !== id)
+      );
+    } catch (error) {
+      console.error("Error eliminando actividad", error);
+    }
   }
 
-  function deleteActivity(id) {
-    setActivities(prev => prev.filter(a => a.id !== id));
-  }
-
+  // 🔹 Expandir / colapsar card
   function toggleExpand(id) {
-    setExpandedCards(prev => {
+    setExpandedCards((prev) => {
       const next = new Set(prev);
+
       if (next.has(id)) next.delete(id);
       else next.add(id);
+
       return next;
     });
   }
 
-  function addSubtask(activityId, subtask) {
-    setActivities(prev =>
-      prev.map(a =>
-        a.id === activityId
-          ? { ...a, subtasks: [...(a.subtasks || []), { id: Date.now(), done: false, ...subtask }] }
-          : a
-      )
-    );
-    setExpandedCards(prev => new Set(prev).add(activityId));
+  // 🔹 Crear subtarea
+  async function addSubtask(activityId, subtask) {
+    try {
+      const nueva = await crearSubtarea({
+        ...subtask,
+        actividadId: activityId,
+      });
+
+      setActivities((prev) =>
+        prev.map((a) =>
+          a.id === activityId
+            ? {
+                ...a,
+                subtasks: [...(a.subtasks || []), nueva],
+              }
+            : a
+        )
+      );
+
+      setExpandedCards((prev) => new Set(prev).add(activityId));
+    } catch (error) {
+      console.error("Error creando subtarea", error);
+    }
   }
 
+  // 🔹 Actualizar subtarea (local)
   function updateSubtask(activityId, subtaskId, data) {
-    setActivities(prev =>
-      prev.map(a =>
+    setActivities((prev) =>
+      prev.map((a) =>
         a.id === activityId
           ? {
               ...a,
-              subtasks: (a.subtasks || []).map(s =>
+              subtasks: (a.subtasks || []).map((s) =>
                 s.id === subtaskId ? { ...s, ...data } : s
               ),
             }
@@ -55,24 +138,33 @@ export function ActivitiesProvider({ children }) {
     );
   }
 
+  // 🔹 Eliminar subtarea (local)
   function deleteSubtask(activityId, subtaskId) {
-    setActivities(prev =>
-      prev.map(a =>
+    setActivities((prev) =>
+      prev.map((a) =>
         a.id === activityId
-          ? { ...a, subtasks: (a.subtasks || []).filter(s => s.id !== subtaskId) }
+          ? {
+              ...a,
+              subtasks: (a.subtasks || []).filter(
+                (s) => s.id !== subtaskId
+              ),
+            }
           : a
       )
     );
   }
 
+  // 🔹 Toggle estado subtarea
   function toggleSubtask(activityId, subtaskId) {
-    setActivities(prev =>
-      prev.map(a =>
+    setActivities((prev) =>
+      prev.map((a) =>
         a.id === activityId
           ? {
               ...a,
-              subtasks: (a.subtasks || []).map(s =>
-                s.id === subtaskId ? { ...s, done: !s.done } : s
+              subtasks: (a.subtasks || []).map((s) =>
+                s.id === subtaskId
+                  ? { ...s, done: !s.done }
+                  : s
               ),
             }
           : a
