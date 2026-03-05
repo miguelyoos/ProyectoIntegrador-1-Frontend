@@ -11,6 +11,8 @@ import {
   crearSubtarea,
 } from "../services/subtareasService";
 
+import { calcEstado } from "../utils/helpers";
+
 const ActivitiesContext = createContext(null);
 
 export function ActivitiesProvider({ children }) {
@@ -31,9 +33,11 @@ export function ActivitiesProvider({ children }) {
         console.log("🔍 Actividades recibidas:", acts);
 
         // Las subtareas ya vienen incluidas en la respuesta del backend
+        // Recalcular el estado basado en horasComp y horasEst
         const actsConSubtareas = acts.map((a) => ({
           ...a,
-          subtasks: a.subtareas || a.subtasks || []
+          subtasks: a.subtareas || a.subtasks || [],
+          estado: calcEstado(a.horasComp, a.horasEst)
         }));
 
         setActivities(actsConSubtareas);
@@ -58,7 +62,11 @@ export function ActivitiesProvider({ children }) {
 
       setActivities((prev) => [
         ...prev,
-        { ...nueva, subtasks: [] }
+        { 
+          ...nueva, 
+          subtasks: [],
+          estado: calcEstado(nueva.horasComp, nueva.horasEst)
+        }
       ]);
     } catch (error) {
       console.error("Error creando actividad", error);
@@ -72,10 +80,16 @@ export function ActivitiesProvider({ children }) {
       const actualizada = await actualizarActividad(id, data);
 
       setActivities((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, ...actualizada } : a))
+        prev.map((a) => (a.id === id ? { 
+          ...a, 
+          ...actualizada,
+          estado: calcEstado(actualizada.horasComp, actualizada.horasEst)
+        } : a))
       );
     } catch (error) {
       console.error("Error actualizando actividad", error);
+      console.error("Detalles del error:", error.response?.data);
+      throw error; // Re-lanzar para que el componente pueda manejarlo
     }
   }
 

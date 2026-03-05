@@ -69,7 +69,9 @@ export default function Hoy() {
 
   function handleSaveActivity(data) {
     if (editingActivityId) {
-      updateActivity(editingActivityId, data);
+      updateActivity(editingActivityId, data).catch(err => {
+        alert('Error al actualizar la actividad. Revisa la consola para más detalles.');
+      });
     } else {
       addActivity(data);
     }

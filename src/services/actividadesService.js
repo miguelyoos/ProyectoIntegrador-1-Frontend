@@ -13,7 +13,22 @@ export const crearActividad = async (actividad) => {
 };
 
 export const actualizarActividad = async (id, cambios) => {
-  const response = await api.put(`/actividades/${id}/`, cambios);
+  // Preparar datos para el backend - remover campos calculados
+  const datosParaBackend = {
+    titulo: cambios.titulo,
+    tipo: cambios.tipo,
+    materia: cambios.materia,
+    desc: cambios.desc || '',
+    fecha: cambios.fecha,
+    prioridad: cambios.prioridad,
+    horasEst: cambios.horasEst,
+    horasComp: cambios.horasComp,
+    // No enviar 'estado' - el backend lo calcula
+  };
+  
+  console.log("📤 Actualizando actividad:", id, datosParaBackend);
+  const response = await api.put(`/actividades/${id}/`, datosParaBackend);
+  console.log("📥 Respuesta del backend:", response.data);
   return response.data;
 };
 
