@@ -32,6 +32,7 @@ body {
 /* Shared form elements */
 input[type="text"],
 input[type="date"],
+input[type="number"],
 textarea,
 select {
   width: 100%;

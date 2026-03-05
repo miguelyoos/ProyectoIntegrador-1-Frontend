@@ -53,3 +53,13 @@
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
+
+.sub-form-row input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.sub-form-row input[type="number"]::-webkit-outer-spin-button,
+.sub-form-row input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
