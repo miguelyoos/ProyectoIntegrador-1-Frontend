@@ -1,25 +1,30 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Layout from '../components/layout/Layout';
-import Login from '../pages/Login';
-import Hoy from '../pages/Hoy';
-import CrearActividad from '../pages/CrearActividad';
-import ActividadDetalle from '../pages/ActividadDetalle';
-import Progreso from '../pages/Progreso';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ActivitiesProvider } from "../context/ActivitiesContext";
+import LoginPage from "../pages/LoginPage";
+import Hoy from "../pages/Hoy";
+import { DashboardPage, CalendarioPage } from '../pages/PlaceholderPages';
+import ProtectedRoute from "../routes/ProtectedRoute";
+import Layout from "../components/layout/Layout";
 
-export default function Router() {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-
-
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/hoy" />} />
-        <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/login" />}>
-          <Route index element={<Navigate to="/hoy" />} />
-          <Route path="hoy" element={<Hoy />} />
-          <Route path="crear" element={<CrearActividad />} />
-          <Route path="actividad/:id" element={<ActividadDetalle />} />
-          <Route path="progreso" element={<Progreso />} />
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage />} />
+
+        <Route
+          element={
+            <ProtectedRoute>
+              <ActivitiesProvider>  {/* ← movido aquí */}
+                <Layout />
+              </ActivitiesProvider>
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/hoy" element={<Hoy />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/calendario" element={<CalendarioPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

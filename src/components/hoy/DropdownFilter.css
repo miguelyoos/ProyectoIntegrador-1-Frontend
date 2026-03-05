@@ -1,0 +1,87 @@
+.dropdown-filter {
+  position: relative;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.15s;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.filter-btn:hover {
+  background: var(--bg);
+}
+
+.dropdown-filter.open .filter-btn {
+  border-color: var(--purple);
+}
+
+.chevron {
+  transition: transform 0.2s;
+}
+
+.dropdown-filter.open .chevron {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  min-width: 190px;
+  z-index: 50;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.18s, transform 0.18s;
+}
+
+.dropdown-filter.open .dropdown-menu {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.dropdown-menu .option {
+  padding: 10px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown-menu .option:hover {
+  background: var(--bg);
+}
+
+.dropdown-menu .option.selected {
+  color: var(--purple);
+  font-weight: 600;
+  background: var(--purple-light);
+}
+
+.dropdown-menu .option .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
