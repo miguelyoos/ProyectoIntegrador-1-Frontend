@@ -1,5 +1,5 @@
 import Header from "./Header";
-import NavBar from "./NavBar";
+import NavBar from "./Navbar";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
 
