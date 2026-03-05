@@ -20,8 +20,8 @@ export default function SubtaskModal({ open, parentActivity, editingSubtask, onC
     setBannerMsg('');
     if (editingSubtask) {
       setNombre(editingSubtask.nombre || "");
-      setFecha(editingSubtask.fecha || "");
-      setHoras(editingSubtask.horas || "");
+      setFecha(editingSubtask.fecha_entrega || "");
+      setHoras(editingSubtask.horas_estimadas || "");
     } else {
       setNombre(''); setFecha(''); setHoras('');
     }

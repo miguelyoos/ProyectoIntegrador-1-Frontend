@@ -9,6 +9,8 @@ import {
 
 import {
   crearSubtarea,
+  editarSubtarea,
+  eliminarSubtarea,
 } from "../services/subtareasService";
 
 import { calcEstado } from "../utils/helpers";
@@ -133,16 +135,16 @@ export function ActivitiesProvider({ children }) {
 
       console.log("✅ Subtarea creada:", nueva);
 
-    setActivities((prev) =>
-      prev.map((a) =>
-        a.id === activityId
-          ? {
-              ...a,
-              subtasks: [...(a.subtasks || []), subtaskConId],
-            }
-          : a
-      )
-    );
+      setActivities((prev) =>
+        prev.map((a) =>
+          a.id === activityId
+            ? {
+                ...a,
+                subtasks: [...(a.subtasks || []), nueva],
+              }
+            : a
+        )
+      );
 
       setExpandedCards((prev) => new Set(prev).add(activityId));
     } catch (error) {
@@ -153,54 +155,68 @@ export function ActivitiesProvider({ children }) {
   }
 
   // 🔹 Actualizar subtarea (local)
-  function updateSubtask(activityId, subtaskId, data) {
+  async function updateSubtask(activityId, subtaskId, data) {
+  try {
+
+    const actualizada = await editarSubtarea(subtaskId, data);
+
     setActivities((prev) =>
       prev.map((a) =>
         a.id === activityId
           ? {
               ...a,
               subtasks: (a.subtasks || []).map((s) =>
-                s.id === subtaskId ? { ...s, ...data } : s
+                s.id === subtaskId ? { ...s, ...actualizada } : s
               ),
             }
           : a
       )
     );
-  }
 
-  // 🔹 Eliminar subtarea (local)
-  function deleteSubtask(activityId, subtaskId) {
-    setActivities((prev) =>
-      prev.map((a) =>
-        a.id === activityId
-          ? {
-              ...a,
-              subtasks: (a.subtasks || []).filter(
-                (s) => s.id !== subtaskId
-              ),
-            }
-          : a
-      )
-    );
+  } catch (error) {
+    console.error("Error actualizando subtarea", error);
   }
+}
+
+  const deleteSubtask = async (activityId, subtaskId) => {
+
+    await eliminarSubtarea(subtaskId);
+
+    setActivities(prev =>
+      prev.map(act =>
+        act.id === activityId
+          ? {
+              ...act,
+              subtasks: act.subtasks.filter(s => s.id !== subtaskId)
+            }
+          : act
+      )
+  );
+};
 
   // 🔹 Toggle estado subtarea
-  function toggleSubtask(activityId, subtaskId) {
-    setActivities((prev) =>
-      prev.map((a) =>
-        a.id === activityId
-          ? {
-              ...a,
-              subtasks: (a.subtasks || []).map((s) =>
-                s.id === subtaskId
-                  ? { ...s, done: !s.done }
-                  : s
-              ),
-            }
-          : a
-      )
-    );
-  }
+  const toggleSubtask = async (activityId, subtaskId) => {
+
+  const activity = activities.find(a => a.id === activityId);
+  const sub = activity.subtasks.find(s => s.id === subtaskId);
+
+ const updated = await editarSubtarea(subtaskId, {
+  done: !sub.done
+});
+
+  setActivities(prev =>
+    prev.map(act =>
+      act.id === activityId
+        ? {
+            ...act,
+            subtasks: act.subtasks.map(s =>
+              s.id === subtaskId ? updated : s
+            )
+          }
+        : act
+    )
+  );
+};
 
   return (
     <ActivitiesContext.Provider
