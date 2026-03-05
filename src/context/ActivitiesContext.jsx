@@ -120,17 +120,18 @@ export function ActivitiesProvider({ children }) {
 
   // 🔹 Crear subtarea
   async function addSubtask(activityId, subtask) {
-  try {
-    const nueva = await crearSubtarea({
-      ...subtask,
-      actividadId: activityId,
-    });
+    try {
+      console.log("📤 Enviando subtarea:", subtask);
+      console.log("📤 Para actividad ID:", activityId);
+      
+      const nueva = await crearSubtarea({
+        nombre: subtask.nombre,
+        fecha_entrega: subtask.fecha, // Backend espera 'fecha_entrega'
+        horas_estimadas: subtask.horas, // Backend espera 'horas_estimadas'
+        actividad: activityId, // Backend espera 'actividad' no 'actividadId'
+      });
 
-    const subtaskConId = {
-      ...nueva,
-      id: nueva.id || crypto.randomUUID(),
-      done: nueva.done ?? false,
-    };
+      console.log("✅ Subtarea creada:", nueva);
 
     setActivities((prev) =>
       prev.map((a) =>
@@ -143,12 +144,13 @@ export function ActivitiesProvider({ children }) {
       )
     );
 
-    setExpandedCards((prev) => new Set(prev).add(activityId));
-
-  } catch (error) {
-    console.error("Error creando subtarea", error);
+      setExpandedCards((prev) => new Set(prev).add(activityId));
+    } catch (error) {
+      console.error("❌ Error creando subtarea", error);
+      console.error("Detalles:", error.response?.data);
+      throw error;
+    }
   }
-}
 
   // 🔹 Actualizar subtarea (local)
   function updateSubtask(activityId, subtaskId, data) {
