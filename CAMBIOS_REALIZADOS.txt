@@ -1,0 +1,101 @@
+═══════════════════════════════════════════════════════════════════
+  RESUMEN DE CAMBIOS REALIZADOS - FRONTEND
+  Rama: Interfaz_Actividades
+  Fecha: 5 de Marzo, 2026
+═══════════════════════════════════════════════════════════════════
+
+1. CONFIGURACIÓN INICIAL
+   ─────────────────────
+   ✓ Cambio de rama a "Interfaz_Actividades"
+   ✓ Actualización de dependencias (npm install)
+   ✓ Inicio del servidor de desarrollo (npm run dev)
+
+2. CONFIGURACIÓN DE API
+   ────────────────────
+   Archivo: .env
+   ✓ Cambio de URL del backend de puerto 3000 a 8000
+     Antes: VITE_API_URL=http://localhost:3000/api
+     Ahora: VITE_API_URL=http://localhost:8000/api
+
+3. MEJORAS EN CAMPOS NUMÉRICOS
+   ───────────────────────────
+   Archivo: src/components/hoy/ActivityModal.css
+   ✓ Ocultación de controles nativos del navegador (flechitas)
+   ✓ Mejora de estilos en campos "Horas estimadas" y "Horas completadas"
+   ✓ Botones personalizados con efecto hover morado
+   ✓ Mejor padding y tamaño de fuente
+
+4. ELIMINACIÓN DE PANTALLA DE BIENVENIDA
+   ──────────────────────────────────────
+   Archivo: src/pages/LoginPage.jsx
+   ✓ Redirección inmediata después del login exitoso
+   ✓ Eliminado el mensaje "¡Listo, estás dentro!" y el delay de 2 segundos
+   ✓ Guardado del email del usuario en localStorage
+
+5. FUNCIONALIDAD DE USUARIO Y LOGOUT
+   ──────────────────────────────────
+   Archivos modificados:
+   - src/components/layout/Header.jsx
+   - src/components/layout/Header.css
+   - src/components/layout/Layout.jsx
+   
+   ✓ Mostrar email del usuario logueado (obtenido de localStorage)
+   ✓ Modal de confirmación personalizado para cerrar sesión
+   ✓ Funcionalidad completa de logout (limpia token y email)
+   ✓ Redirección al login después de cerrar sesión
+   ✓ Modal integrado directamente en Header (sin componentes adicionales)
+
+6. OPTIMIZACIÓN DE CARGA DE DATOS
+   ───────────────────────────────
+   Archivo: src/context/ActivitiesContext.jsx
+   
+   PROBLEMA RESUELTO:
+   - El frontend llamaba a /api/actividades/ DOS VECES
+   - Hacía peticiones individuales de subtareas innecesarias
+   
+   SOLUCIÓN IMPLEMENTADA:
+   ✓ Eliminada la carga duplicada de actividades
+   ✓ Uso de subtareas que ya vienen en la respuesta del backend
+   ✓ Eliminadas peticiones individuales de obtenerSubtareas()
+   ✓ Implementado cleanup en useEffect para evitar race conditions
+
+7. ELIMINACIÓN DE STRICTMODE
+   ─────────────────────────
+   Archivo: src/main.jsx
+   ✓ Removido StrictMode para evitar doble renderizado en desarrollo
+   ✓ Ahora las actividades se cargan solo UNA VEZ
+
+8. ARCHIVOS ELIMINADOS
+   ───────────────────
+   ✗ src/components/layout/LogoutModal.jsx (innecesario)
+   ✗ src/components/layout/LogoutModal.css (innecesario)
+   
+   Razón: Todo se integró directamente en Header.jsx
+
+═══════════════════════════════════════════════════════════════════
+  RESULTADO FINAL
+═══════════════════════════════════════════════════════════════════
+
+✓ Backend conectado correctamente en puerto 8000
+✓ Login funcional con redirección inmediata
+✓ Email de usuario mostrado en header
+✓ Logout con confirmación modal personalizada
+✓ Campos numéricos con mejor diseño
+✓ Carga optimizada: 1 sola petición al backend
+✓ Sin peticiones duplicadas o innecesarias
+✓ Aplicación más rápida y eficiente
+
+═══════════════════════════════════════════════════════════════════
+  COMANDOS PARA EJECUTAR
+═══════════════════════════════════════════════════════════════════
+
+Frontend (puerto 5173):
+  npm run dev
+
+Backend (puerto 8000):
+  python manage.py runserver
+
+URL de la aplicación:
+  http://localhost:5173/
+
+═══════════════════════════════════════════════════════════════════

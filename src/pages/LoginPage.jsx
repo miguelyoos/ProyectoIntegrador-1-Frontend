@@ -62,12 +62,8 @@ export default function LoginPage({ onLoginSuccess }) {
   // ── Redirect after showing success message ──────────────────
   useEffect(() => {
     if (success) {
-    
-      
-      const timer = setTimeout(() => {
-        navigate('/hoy');
-      }, 2000); // Wait 2 seconds before redirecting
-      return () => clearTimeout(timer);
+      // Redirect immediately without showing success message
+      navigate('/hoy');
     }
   }, [success, navigate]);
 
@@ -147,14 +143,12 @@ export default function LoginPage({ onLoginSuccess }) {
         password: pwVal,
       });
 
-      // Guardar token
+      // Guardar token y email
       localStorage.setItem("token", data.access);
+      localStorage.setItem("userEmail", emailVal);
 
-      setSuccess(true);
-
-      setTimeout(() => {
-        navigate("/hoy");
-      }, 1500);
+      // Redirect immediately
+      navigate("/hoy");
 
     } catch (error) {
       setEmailError("Credenciales incorrectas");

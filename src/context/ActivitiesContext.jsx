@@ -8,7 +8,6 @@ import {
 } from "../services/actividadesService";
 
 import {
-  obtenerSubtareas,
   crearSubtarea,
 } from "../services/subtareasService";
 
@@ -20,28 +19,36 @@ export function ActivitiesProvider({ children }) {
 
   // 🔹 Cargar actividades y sus subtareas
   useEffect(() => {
-    console.log("Cargando actividades...");
+    let cancelled = false;
+
     async function cargarActividades() {
-      
+      console.log("Cargando actividades...");
       try {
         const acts = await obtenerActividades();
-
-        const actsConSubtareas = await Promise.all(
-  acts.map(async (a) => {
-    const subtareas = await obtenerSubtareas(a.id);
-    console.log("subtareas de", a.titulo, subtareas); // ← agrega esto
-    return { ...a, subtasks: subtareas };
-  })
-);
         
+        if (cancelled) return; // No actualizar si el componente se desmontó
+        
+        console.log("🔍 Actividades recibidas:", acts);
+
+        // Las subtareas ya vienen incluidas en la respuesta del backend
+        const actsConSubtareas = acts.map((a) => ({
+          ...a,
+          subtasks: a.subtareas || a.subtasks || []
+        }));
 
         setActivities(actsConSubtareas);
       } catch (error) {
-        console.error("Error cargando actividades", error);
+        if (!cancelled) {
+          console.error("Error cargando actividades", error);
+        }
       }
     }
 
     cargarActividades();
+
+    return () => {
+      cancelled = true; // Cancelar si el componente se desmonta
+    };
   }, []);
 
   // 🔹 Crear actividad

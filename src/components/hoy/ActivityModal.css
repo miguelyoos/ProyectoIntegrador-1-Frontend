@@ -103,32 +103,49 @@ label {
   box-shadow: none;
   flex: 1;
   -moz-appearance: textfield;
+  appearance: textfield;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .spinner-wrap input[type="number"]::-webkit-inner-spin-button,
 .spinner-wrap input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.spinner-wrap input[type="number"]:focus {
+  outline: none;
 }
 
 .spin-btns {
   display: flex;
   flex-direction: column;
   border-left: 1.5px solid var(--border);
+  background: #f5f4f2;
 }
 
 .spin-btns button {
-  background: none;
+  background: transparent;
   border: none;
   cursor: pointer;
-  padding: 4px 10px;
-  font-size: 11px;
-  color: #777;
+  padding: 6px 12px;
+  font-size: 10px;
+  color: #666;
   line-height: 1;
-  transition: background 0.15s;
+  transition: all 0.15s;
+  user-select: none;
 }
 
 .spin-btns button:hover {
-  background: var(--bg);
+  background: var(--purple);
+  color: white;
+}
+
+.spin-btns button:active {
+  transform: scale(0.95);
 }
 
 .spin-btns button:first-child {

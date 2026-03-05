@@ -8,7 +8,7 @@ export default function Layout() {
 
   return (
     <>
-      <Header userEmail="usuario@email.com" />
+      <Header />
       <NavBar activeTab={activeTab} onTabChange={setActiveTab} />
       <Outlet />
     </>
