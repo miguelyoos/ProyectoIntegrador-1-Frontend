@@ -8,14 +8,14 @@ import './RegisterPage.css';
 
 // ── Validation helpers ────────────────────────────────────────
 function isValidEmail(v) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  // Only requires @ and domain ending with .com
+  return /^[^\s@]+@[^\s@]+\.com$/.test(v);
 }
 
 function getEmailError(v) {
-  if (!v)                               return 'Necesitamos tu correo para saber tu identidad.';
-  if (!v.includes('@'))                 return 'Falta el @. Ej: tu@correo.com';
-  if (v.endsWith('@'))                  return 'Falta el dominio después del @. Ej: tu@correo.com';
-  if (!v.split('@')[1]?.includes('.'))  return 'El dominio parece incompleto. Ej: tu@correo.com';
+  if (!v) return 'El correo es obligatorio.';
+  if (!v.includes('@')) return 'Falta el @.';
+  if (!v.endsWith('.com')) return 'El correo debe terminar en .com';
   return '';
 }
 
