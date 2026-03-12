@@ -8,28 +8,14 @@ import './RegisterPage.css';
 
 // ── Validation helpers ────────────────────────────────────────
 function isValidEmail(v) {
-  const allowedDomains = ['gmail.com', 'mail.com', 'hotmail.com', 'outlook.com', 'live.com'];
-  if (!v.includes('@')) return false;
-  const domain = v.split('@')[1]?.toLowerCase();
-  if (!domain) return false;
-  const isAllowed = allowedDomains.some(d => domain === d || domain.endsWith('.' + d));
-  const hasValidTLD = domain.includes('.com') || domain.includes('.org') || domain.includes('.net') || domain.includes('.edu');
-  return isAllowed || hasValidTLD;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
 function getEmailError(v) {
   if (!v) return 'El correo es obligatorio.';
   if (!v.includes('@')) return 'Falta el @. Ej: tu@correo.com';
   if (v.endsWith('@')) return 'Falta el dominio después del @. Ej: tu@correo.com';
-  
-  const domain = v.split('@')[1]?.toLowerCase();
-  if (!domain) return 'El dominio parece incompleto. Ej: tu@correo.com';
-  
-  const allowedDomains = ['gmail.com', 'mail.com', 'hotmail.com', 'outlook.com', 'live.com'];
-  const isAllowed = allowedDomains.some(d => domain === d || domain.endsWith('.' + d));
-  const hasValidTLD = domain.includes('.com') || domain.includes('.org') || domain.includes('.net') || domain.includes('.edu');
-  
-  if (!isAllowed && !hasValidTLD) return 'Usa un correo de Gmail, Mail, Hotmail o con dominio .com/.org/.net';
+  if (!v.split('@')[1]?.includes('.')) return 'El dominio parece incompleto. Ej: tu@correo.com';
   return '';
 }
 
