@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import FormField from '../components/login/FormField';
 import PasswordInput from '../components/login/PasswordInput';
 import SuccessMessage from '../components/login/SuccessMessage';
+import { register } from '../services/RegisterService';
 import './RegisterPage.css';
 
 // ── Logo SVG ──────────────────────────────────────────────────
@@ -72,8 +73,14 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // Simulate registration
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await register({
+        username,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        password,
+      });
+
       navigate('/login');
 
     } catch (error) {
