@@ -221,7 +221,7 @@ export default function LoginPage({ onLoginSuccess }) {
         {/* Divider + footer */}
         <div className="login-divider"><span>¿Aún no tienes cuenta?</span></div>
         <p className="login-footer">
-          <a href="#">Crea una gratis</a> — tarda menos de un minuto.
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/register'); }}>Crea una gratis</a> — tarda menos de un minuto.
         </p>
       </div>
     </div>

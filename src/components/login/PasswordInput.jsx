@@ -26,7 +26,7 @@ const LockIcon = () => (
  * Password field with show/hide toggle.
  * Accepts same props as FormField (minus type and rightSlot).
  */
-export default function PasswordInput({ id = 'password', value, onChange, onBlur, error, placeholder = '••••••••' }) {
+export default function PasswordInput({ id = 'password', label = 'Contraseña', value, onChange, onBlur, error, placeholder = '••••••••' }) {
   const [visible, setVisible] = useState(false);
 
   const toggleBtn = (
@@ -43,14 +43,14 @@ export default function PasswordInput({ id = 'password', value, onChange, onBlur
   return (
     <FormField
       id={id}
-      label="Contraseña"
+      label={label}
       labelIcon={<LockIcon />}
       type={visible ? 'text' : 'password'}
       value={value}
       onChange={onChange}
       onBlur={onBlur}
       placeholder={placeholder}
-      autoComplete="current-password"
+      autoComplete={id === 'confirmPassword' ? 'new-password' : 'current-password'}
       error={error}
       rightSlot={toggleBtn}
     />

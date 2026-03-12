@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ActivitiesProvider } from "../context/ActivitiesContext";
 import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
 import Hoy from "../pages/Hoy";
 import { DashboardPage, CalendarioPage } from '../pages/PlaceholderPages';
 import ProtectedRoute from "../routes/ProtectedRoute";
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         <Route
           element={
