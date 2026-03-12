@@ -12,11 +12,11 @@ function isValidEmail(v) {
 }
 
 function getEmailError(v) {
-  if (!v) return 'El correo es obligatorio.';
-  if (!v.includes('@')) return 'Falta el @. Ej: tu@correo.com';
-  if (v.endsWith('@')) return 'Falta el dominio después del @. Ej: tu@correo.com';
-  if (!v.split('@')[1]?.includes('.')) return 'El dominio parece incompleto. Ej: tu@correo.com';
-  return '';
+  if (!v)                               return 'Necesitamos tu correo para saber tu identidad.';
+  if (!v.includes('@'))                 return 'Falta el @. Ej: tu@correo.com';
+  if (v.endsWith('@'))                  return 'Falta el dominio después del @. Ej: tu@correo.com';
+  if (!v.split('@')[1]?.includes('.'))  return 'El dominio parece incompleto. Ej: tu@correo.com';
+  return 'Revisá el formato. Ej: tu@correo.com';
 }
 
 function getUsernameError(v) {
