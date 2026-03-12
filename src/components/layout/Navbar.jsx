@@ -5,7 +5,7 @@ import "./NavBar.css";
 const TABS = [
   {
     key: "/hoy",
-    label: "Dashboard",
+    label: "Hoy",
     icon: (
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="3" width="7" height="7" />
