@@ -11,7 +11,13 @@ function isValidEmail(v) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
-
+function getEmailError(v) {
+  if (!v) return 'El correo es obligatorio.';
+  if (!v.includes('@')) return 'Falta el @. Ej: tu@correo.com';
+  if (v.endsWith('@')) return 'Falta el dominio después del @. Ej: tu@correo.com';
+  if (!v.split('@')[1]?.includes('.')) return 'El dominio parece incompleto. Ej: tu@correo.com';
+  return '';
+}
 
 function getUsernameError(v) {
   if (!v) return 'El nombre de usuario es obligatorio.';
