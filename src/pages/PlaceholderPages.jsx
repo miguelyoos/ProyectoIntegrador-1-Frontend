@@ -5,7 +5,7 @@ export function DashboardPage() {
   return (
     <main className="placeholder-page">
       <div className="placeholder-icon">📊</div>
-      <h2>Dashboard</h2>
+      <h2>Hoy</h2>
       <p>Próximamente: resumen de tus actividades, estadísticas y progreso general.</p>
     </main>
   );

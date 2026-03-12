@@ -136,7 +136,7 @@ export default function LoginPage({ onLoginSuccess }) {
     if (!valid) { shake(); return; }
 
     setLoading(true);
-
+// modificado temporalmente para modo demo sin backend, validando localmente con credenciales fijas. En producción, aquí iría la llamada real al backend:
     try {
       // ─ MODO DEMO: valida localmente sin backend ─────────────────
       if (emailVal === VALID_EMAIL && pwVal === VALID_PASSWORD) {

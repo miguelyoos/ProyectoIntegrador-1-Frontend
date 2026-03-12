@@ -25,7 +25,7 @@ export default function App() {
           }
         >
           <Route path="/actividades" element={<actividades />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/hoy" element={<DashboardPage />} />
           <Route path="/calendario" element={<CalendarioPage />} />
         </Route>
       </Routes>
