@@ -8,15 +8,11 @@ import './RegisterPage.css';
 
 // ── Validation helpers ────────────────────────────────────────
 function isValidEmail(v) {
-  // Only requires @ and domain ending with .com
-  return /^[^\s@]+@[^\s@]+\.com$/.test(v);
+  return true; // Validation handled by backend
 }
 
 function getEmailError(v) {
-  if (!v) return 'El correo es obligatorio.';
-  if (!v.includes('@')) return 'Falta el @.';
-  if (!v.endsWith('.com')) return 'El correo debe terminar en .com';
-  return '';
+  return ''; // No client-side validation
 }
 
 function getUsernameError(v) {
