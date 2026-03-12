@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { useActivities } from '../context/ActivitiesContext';
 import { PRIO_ORDER } from '../utils/helpers';
-import ActivityFilters from '../components/hoy/ActivityFilters';
+import ActivityFilters from '../components/actividades/ActivityFilters';
 import StatusTabs from '../components/hoy/StatusTabs';
-import ActivityCard from '../components/hoy/ActivityCard';
-import ActivityModal from '../components/hoy/ActivityModal';
-import SubtaskModal from '../components/hoy/SubtaskModal';
-import ConfirmDialog from '../components/hoy/ConfirmDialog';
-import './Hoy.css';
+import ActivityCard from '../components/actividades/ActivityCard';
+import ActivityModal from '../components/actividades/ActivityModal';
+import SubtaskModal from '../components/actividades/SubtaskModal';
+import ConfirmDialog from '../components/actividades/ConfirmDialog';
+import './actividades.css';
 
 export default function Hoy() {
   const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask } = useActivities();

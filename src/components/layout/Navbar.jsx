@@ -4,7 +4,7 @@ import "./NavBar.css";
 
 const TABS = [
   {
-    key: "/dashboard",
+    key: "/hoy",
     label: "Dashboard",
     icon: (
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -16,7 +16,7 @@ const TABS = [
     ),
   },
   {
-    key: "/hoy",
+    key: "/actividades",
     label: "Actividades",
     icon: (
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
