@@ -9,7 +9,7 @@ import './LoginPage.css';
 
 // ── Credentials for demo ─────────────────────────────────────
 const VALID_EMAIL    = 'root@root.com';
-const VALID_PASSWORD = 'root';
+const VALID_PASSWORD = 'rootroot';
 
 // ── Validation helpers ────────────────────────────────────────
 function isValidEmail(v) {
