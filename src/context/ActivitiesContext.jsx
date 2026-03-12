@@ -62,14 +62,18 @@ export function ActivitiesProvider({ children }) {
     try {
       const nueva = await crearActividad(data);
 
+      const actividadConSubtareas = { 
+        ...nueva, 
+        subtasks: [],
+        estado: calcEstado(nueva.horasComp, nueva.horasEst)
+      };
+
       setActivities((prev) => [
         ...prev,
-        { 
-          ...nueva, 
-          subtasks: [],
-          estado: calcEstado(nueva.horasComp, nueva.horasEst)
-        }
+        actividadConSubtareas
       ]);
+
+      return actividadConSubtareas;
     } catch (error) {
       console.error("Error creando actividad", error);
     }

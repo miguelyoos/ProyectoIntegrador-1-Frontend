@@ -1,0 +1,99 @@
+.subtask-request-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.subtask-request-dialog {
+  background: var(--white, #fff);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.subtask-request-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.subtask-request-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink, #1a1828);
+  margin: 0 0 12px 0;
+}
+
+.subtask-request-message {
+  font-size: 14px;
+  color: var(--muted, #666);
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.subtask-request-message strong {
+  color: var(--ink, #1a1828);
+}
+
+.subtask-request-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.subtask-request-buttons button {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-cancel {
+  background: #f0f0f0;
+  color: var(--muted, #666);
+}
+
+.btn-cancel:hover {
+  background: #e0e0e0;
+}
+
+.btn-confirm {
+  background: var(--violet, #7b5ce5);
+  color: white;
+}
+
+.btn-confirm:hover {
+  background: #6a4fd4;
+  transform: translateY(-1px);
+}

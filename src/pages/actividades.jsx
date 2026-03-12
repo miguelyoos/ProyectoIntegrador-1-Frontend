@@ -7,10 +7,11 @@ import ActivityCard from '../components/hoy/ActivityCard';
 import ActivityModal from '../components/hoy/ActivityModal';
 import SubtaskModal from '../components/hoy/SubtaskModal';
 import ConfirmDialog from '../components/hoy/ConfirmDialog';
+import SubtaskRequest from '../components/hoy/SubtaskRequest';
 import './actividades.css';
 
 export default function Hoy() {
-  const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask } = useActivities();
+  const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask, toggleExpand } = useActivities();
   
   
   // Filter state
@@ -30,6 +31,10 @@ export default function Hoy() {
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+
+  // Subtask request state
+  const [subtaskRequestOpen, setSubtaskRequestOpen] = useState(false);
+  const [subtaskRequestActivity, setSubtaskRequestActivity] = useState(null);
 
   // Computed counts
   const counts = useMemo(() => {
@@ -73,7 +78,11 @@ export default function Hoy() {
         alert('Error al actualizar la actividad. Revisa la consola para más detalles.');
       });
     } else {
-      addActivity(data);
+      addActivity(data).then((newActivity) => {
+        // Show subtask request dialog for new activities
+        setSubtaskRequestActivity(newActivity);
+        setSubtaskRequestOpen(true);
+      });
     }
     closeActivityModal();
   }
@@ -109,6 +118,22 @@ export default function Hoy() {
       addSubtask(subtaskActivityId, data);
     }
     closeSubtaskModal();
+  }
+
+  // SubtaskRequest handlers
+  function handleSubtaskRequestConfirm() {
+    if (subtaskRequestActivity) {
+      // Expand the card first, then open subtask modal
+      toggleExpand(subtaskRequestActivity.id);
+      openAddSubtask(subtaskRequestActivity.id);
+    }
+    setSubtaskRequestOpen(false);
+    setSubtaskRequestActivity(null);
+  }
+
+  function handleSubtaskRequestCancel() {
+    setSubtaskRequestOpen(false);
+    setSubtaskRequestActivity(null);
   }
 
   const editingActivity = editingActivityId ? activities.find(a => a.id === editingActivityId) : null;
@@ -181,6 +206,13 @@ export default function Hoy() {
         message={deletingActivity ? `¿Eliminar "${deletingActivity.titulo}"? Esta acción no se puede deshacer.` : ''}
         onCancel={() => { setConfirmOpen(false); setDeletingId(null); }}
         onConfirm={handleConfirmDelete}
+      />
+
+      <SubtaskRequest
+        open={subtaskRequestOpen}
+        activityTitle={subtaskRequestActivity?.titulo || ''}
+        onConfirm={handleSubtaskRequestConfirm}
+        onCancel={handleSubtaskRequestCancel}
       />
     </>
   );
