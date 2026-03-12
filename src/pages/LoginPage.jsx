@@ -138,22 +138,22 @@ export default function LoginPage({ onLoginSuccess }) {
     setLoading(true);
 
     try {
-      const data = await login({
-        email: emailVal,
-        password: pwVal,
-      });
+      // ─ MODO DEMO: valida localmente sin backend ─────────────────
+      if (emailVal === VALID_EMAIL && pwVal === VALID_PASSWORD) {
+        // Simular token y login exitoso
+        localStorage.setItem("token", "demo-token-" + Date.now());
+        localStorage.setItem("userEmail", emailVal);
+        console.log('✓ Login demo exitoso (sin backend)');
+        // Redirect immediately
+        navigate("/hoy");
+        return;
+      }
 
-      // Guardar token y email
-      localStorage.setItem("token", data.access);
-      localStorage.setItem("userEmail", emailVal);
-
-      // Redirect immediately
-      navigate("/hoy");
-
-    } catch (error) {
-      setEmailError("Credenciales incorrectas");
-      setPasswordError("Verifica tus datos");
+      // Si no coinciden las credenciales demo, error
+      setEmailError("Credenciales incorrectas (modo demo)");
+      setPasswordError("Usa: " + VALID_EMAIL + " / " + VALID_PASSWORD);
       shake();
+
     } finally {
       setLoading(false);
     }
