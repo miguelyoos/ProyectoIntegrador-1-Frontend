@@ -4,6 +4,7 @@ import { useActivities } from '../context/ActivitiesContext';
 import ActivityModal from '../components/hoy/ActivityModal';
 import SubtasksPanel from '../components/hoy/SubtasksPanel';
 import SubtaskModal from '../components/hoy/SubtaskModal';
+import SubtaskRequest from '../components/hoy/SubtaskRequest';
 import ConfirmDialog from '../components/hoy/ConfirmDialog';
 import './PlaceholderPage.css';
 
@@ -72,6 +73,10 @@ export function DashboardPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingActivityId, setDeletingActivityId] = useState(null);
 
+  // Subtask request dialog state
+  const [subtaskRequestOpen, setSubtaskRequestOpen] = useState(false);
+  const [subtaskRequestActivity, setSubtaskRequestActivity] = useState(null);
+
   // Track expanded activity in dashboard
   const [expandedActivityId, setExpandedActivityId] = useState(null);
 
@@ -103,9 +108,27 @@ export function DashboardPage() {
     if (editingActivityId) {
       updateActivity(editingActivityId, data);
     } else {
-      addActivity(data);
+      addActivity(data).then((newActivity) => {
+        // Show subtask request dialog for new activities
+        setSubtaskRequestActivity(newActivity);
+        setSubtaskRequestOpen(true);
+      });
     }
     closeActivityModal();
+  }
+
+  // Subtask request handlers
+  function handleSubtaskRequestConfirm() {
+    if (subtaskRequestActivity) {
+      openAddSubtask(subtaskRequestActivity.id);
+    }
+    setSubtaskRequestOpen(false);
+    setSubtaskRequestActivity(null);
+  }
+
+  function handleSubtaskRequestCancel() {
+    setSubtaskRequestOpen(false);
+    setSubtaskRequestActivity(null);
   }
 
   // Subtask modal handlers
@@ -474,6 +497,14 @@ export function DashboardPage() {
         message={deletingActivityId ? `¿Eliminar la actividad? Esta acción no se puede deshacer.` : ''}
         onCancel={() => setDeleteDialogOpen(false)}
         onConfirm={handleConfirmDelete}
+      />
+
+      {/* Subtask Request Dialog */}
+      <SubtaskRequest
+        open={subtaskRequestOpen}
+        activityTitle={subtaskRequestActivity?.titulo || ''}
+        onConfirm={handleSubtaskRequestConfirm}
+        onCancel={handleSubtaskRequestCancel}
       />
     </main>
   );
