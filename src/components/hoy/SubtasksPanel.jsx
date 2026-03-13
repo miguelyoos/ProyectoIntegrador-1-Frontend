@@ -89,6 +89,7 @@ export default function SubtasksPanel({ activity, open, onAddSubtask, onEditSubt
 
       <ConfirmDialog
         open={deleteConfirmOpen}
+        title="¿Eliminar subtarea?"
         message={subtaskToDelete ? `¿Eliminar la subtarea "${subtaskToDelete.nombre}"? Esta acción no se puede deshacer.` : ''}
         onCancel={handleCancelDelete}
         onConfirm={handleConfirmDelete}
