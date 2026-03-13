@@ -139,7 +139,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #000000;
+  color: #6e6e6e;
   width: 28px;
   height: 28px;
   display: flex;
@@ -156,7 +156,7 @@
 }
 
 .subtask-icon-btn.del:hover {
-  background: #000000;
+  background: #949494;
   color: #dc2626;
 }
 
