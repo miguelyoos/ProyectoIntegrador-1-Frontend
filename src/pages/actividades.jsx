@@ -10,7 +10,7 @@ import ConfirmDialog from '../components/hoy/ConfirmDialog';
 import SubtaskRequest from '../components/hoy/SubtaskRequest';
 import './actividades.css';
 
-export default function Hoy() {
+export default function actividades() {
   const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask, toggleExpand } = useActivities();
   
   
