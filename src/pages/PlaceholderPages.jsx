@@ -1,11 +1,154 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActivities } from '../context/ActivitiesContext';
+import ActivityModal from '../components/hoy/ActivityModal';
+import SubtasksPanel from '../components/hoy/SubtasksPanel';
+import SubtaskModal from '../components/hoy/SubtaskModal';
+import ConfirmDialog from '../components/hoy/ConfirmDialog';
 import './PlaceholderPage.css';
 
+// Dashboard activity item component with expand/collapse
+function DashboardActivityItem({ activity, isExpanded, onToggle, onEdit, onDelete, onAddSubtask, onEditSubtask }) {
+  return (
+    <li key={activity.id} className="activity-item-wrapper">
+      <div className={`activity-item ${isExpanded ? 'expanded' : ''}`} onClick={onToggle}>
+        <div className={`priority-indicator ${activity.prioridad?.toLowerCase()}`}></div>
+        <div className="activity-info">
+          <span className="activity-title">{activity.titulo}</span>
+          <span className="activity-meta">
+            {activity.materia} • {activity.horasComp || 0}h/{activity.horasEst || 0}h
+          </span>
+        </div>
+        <div className={`status-badge ${activity.estado}`}>
+          {activity.estado === 'completada' ? '✓' : activity.estado === 'progreso' ? '↻' : '○'}
+        </div>
+        <div className="activity-actions">
+          <button className="activity-action-btn" title="Añadir subtarea" onClick={(e) => { e.stopPropagation(); onAddSubtask(activity.id); }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <button className="activity-action-btn" title="Editar" onClick={(e) => { e.stopPropagation(); onEdit(activity.id); }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+          </button>
+          <button className="activity-action-btn delete" title="Eliminar" onClick={(e) => { e.stopPropagation(); onDelete(activity.id); }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      {isExpanded && (
+        <SubtasksPanel
+          activity={activity}
+          open={true}
+          onAddSubtask={onAddSubtask}
+          onEditSubtask={onEditSubtask}
+        />
+      )}
+    </li>
+  );
+}
+
 export function DashboardPage() {
-  const { activities } = useActivities();
+  const { activities, addActivity, updateActivity, deleteActivity, expandedCards, toggleExpand, addSubtask, updateSubtask } = useActivities();
   const navigate = useNavigate();
+
+  // Modal state
+  const [activityModalOpen, setActivityModalOpen] = useState(false);
+  const [editingActivityId, setEditingActivityId] = useState(null);
+
+  // Subtask modal state
+  const [subtaskModalOpen, setSubtaskModalOpen] = useState(false);
+  const [subtaskActivityId, setSubtaskActivityId] = useState(null);
+  const [editingSubtaskId, setEditingSubtaskId] = useState(null);
+
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingActivityId, setDeletingActivityId] = useState(null);
+
+  // Track expanded activity in dashboard
+  const [expandedActivityId, setExpandedActivityId] = useState(null);
+
+  function toggleActivityExpand(activityId) {
+    setExpandedActivityId(expandedActivityId === activityId ? null : activityId);
+  }
+
+  // Activity edit/delete handlers
+  function handleEditActivity(id) {
+    setEditingActivityId(id);
+    setActivityModalOpen(true);
+  }
+
+  function handleDeleteActivity(id) {
+    setDeletingActivityId(id);
+    setDeleteDialogOpen(true);
+  }
+
+  // Get activity being edited
+  const editingActivity = editingActivityId
+    ? activities.find(a => a.id === editingActivityId)
+    : null;
+
+  // Modal handlers
+  function openNewActivity() { setEditingActivityId(null); setActivityModalOpen(true); }
+  function closeActivityModal() { setActivityModalOpen(false); setEditingActivityId(null); }
+
+  function handleSaveActivity(data) {
+    if (editingActivityId) {
+      updateActivity(editingActivityId, data);
+    } else {
+      addActivity(data);
+    }
+    closeActivityModal();
+  }
+
+  // Subtask modal handlers
+  function openAddSubtask(activityId) {
+    setSubtaskActivityId(activityId);
+    setEditingSubtaskId(null);
+    setSubtaskModalOpen(true);
+  }
+
+  function openEditSubtask(activityId, subtaskId) {
+    setSubtaskActivityId(activityId);
+    setEditingSubtaskId(subtaskId);
+    setSubtaskModalOpen(true);
+  }
+
+  function closeSubtaskModal() {
+    setSubtaskModalOpen(false);
+    setSubtaskActivityId(null);
+    setEditingSubtaskId(null);
+  }
+
+  function handleSaveSubtask(data) {
+    if (editingSubtaskId) {
+      updateSubtask(subtaskActivityId, editingSubtaskId, data);
+    } else {
+      addSubtask(subtaskActivityId, data);
+    }
+    closeSubtaskModal();
+  }
+
+  // Delete handlers
+  function askDelete(id) {
+    setDeletingActivityId(id);
+    setDeleteDialogOpen(true);
+  }
+
+  function handleConfirmDelete() {
+    if (deletingActivityId) {
+      deleteActivity(deletingActivityId);
+    }
+    setDeleteDialogOpen(false);
+    setDeletingActivityId(null);
+  }
 
   // Calculate statistics
   const stats = useMemo(() => {
@@ -107,7 +250,7 @@ export function DashboardPage() {
             }
           </p>
         </div>
-        <button className="btn-new-task" onClick={() => navigate('/actividades')}>
+        <button className="btn-new-task" onClick={openNewActivity}>
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
@@ -229,18 +372,16 @@ export function DashboardPage() {
             </div>
             <ul className="activity-list">
               {groupedActivities.today.map(activity => (
-                <li key={activity.id} className="activity-item" onClick={() => navigate('/actividades')}>
-                  <div className={`priority-indicator ${activity.prioridad?.toLowerCase()}`}></div>
-                  <div className="activity-info">
-                    <span className="activity-title">{activity.titulo}</span>
-                    <span className="activity-meta">
-                      {activity.materia} • {activity.horasComp || 0}h/{activity.horasEst || 0}h
-                    </span>
-                  </div>
-                  <div className={`status-badge ${activity.estado}`}>
-                    {activity.estado === 'completada' ? '✓' : activity.estado === 'progreso' ? '↻' : '○'}
-                  </div>
-                </li>
+                <DashboardActivityItem
+                  key={activity.id}
+                  activity={activity}
+                  isExpanded={expandedActivityId === activity.id}
+                  onToggle={() => toggleActivityExpand(activity.id)}
+                  onEdit={handleEditActivity}
+                  onDelete={handleDeleteActivity}
+                  onAddSubtask={openAddSubtask}
+                  onEditSubtask={openEditSubtask}
+                />
               ))}
             </ul>
           </div>
@@ -256,16 +397,16 @@ export function DashboardPage() {
             </div>
             <ul className="activity-list">
               {groupedActivities.overdue.map(activity => (
-                <li key={activity.id} className="activity-item" onClick={() => navigate('/actividades')}>
-                  <div className={`priority-indicator ${activity.prioridad?.toLowerCase()}`}></div>
-                  <div className="activity-info">
-                    <span className="activity-title">{activity.titulo}</span>
-                    <span className="activity-meta overdue-date">{activity.fecha}</span>
-                  </div>
-                  <div className={`status-badge ${activity.estado}`}>
-                    {activity.estado === 'completada' ? '✓' : activity.estado === 'progreso' ? '↻' : '○'}
-                  </div>
-                </li>
+                <DashboardActivityItem
+                  key={activity.id}
+                  activity={activity}
+                  isExpanded={expandedActivityId === activity.id}
+                  onToggle={() => toggleActivityExpand(activity.id)}
+                  onEdit={handleEditActivity}
+                  onDelete={handleDeleteActivity}
+                  onAddSubtask={openAddSubtask}
+                  onEditSubtask={openEditSubtask}
+                />
               ))}
             </ul>
           </div>
@@ -281,16 +422,16 @@ export function DashboardPage() {
             </div>
             <ul className="activity-list">
               {groupedActivities.upcoming.slice(0, 5).map(activity => (
-                <li key={activity.id} className="activity-item" onClick={() => navigate('/actividades')}>
-                  <div className={`priority-indicator ${activity.prioridad?.toLowerCase()}`}></div>
-                  <div className="activity-info">
-                    <span className="activity-title">{activity.titulo}</span>
-                    <span className="activity-meta">{activity.fecha}</span>
-                  </div>
-                  <div className={`status-badge ${activity.estado}`}>
-                    {activity.estado === 'completada' ? '✓' : activity.estado === 'progreso' ? '↻' : '○'}
-                  </div>
-                </li>
+                <DashboardActivityItem
+                  key={activity.id}
+                  activity={activity}
+                  isExpanded={expandedActivityId === activity.id}
+                  onToggle={() => toggleActivityExpand(activity.id)}
+                  onEdit={handleEditActivity}
+                  onDelete={handleDeleteActivity}
+                  onAddSubtask={openAddSubtask}
+                  onEditSubtask={openEditSubtask}
+                />
               ))}
             </ul>
           </div>
@@ -302,12 +443,38 @@ export function DashboardPage() {
             <div className="empty-icon">✨</div>
             <h3>¡Bienvenido a tu dashboard!</h3>
             <p>No tienes ninguna actividad todavía. Crea tu primera tarea y comienza a organizar tu tiempo.</p>
-            <button className="btn-primary" onClick={() => navigate('/actividades')}>
+            <button className="btn-primary" onClick={openNewActivity}>
               Crear primera tarea
             </button>
           </div>
         )}
       </section>
+
+      {/* Activity Modal */}
+      <ActivityModal
+        open={activityModalOpen}
+        editingActivity={editingActivity}
+        onClose={closeActivityModal}
+        onSave={handleSaveActivity}
+      />
+
+      {/* Subtask Modal */}
+      <SubtaskModal
+        open={subtaskModalOpen}
+        activityId={subtaskActivityId}
+        editingSubtaskId={editingSubtaskId}
+        onClose={closeSubtaskModal}
+        onSave={handleSaveSubtask}
+      />
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        title="¿Eliminar actividad?"
+        message={deletingActivityId ? `¿Eliminar la actividad? Esta acción no se puede deshacer.` : ''}
+        onCancel={() => setDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </main>
   );
 }
