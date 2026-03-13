@@ -260,6 +260,9 @@ export function DashboardPage() {
     };
   }, [activities]);
 
+  // Get count for "Para hoy" from grouped activities
+  const actividadesParaHoy = groupedActivities.today.length;
+
   const hasActivities = activities.length > 0;
 
   return (
@@ -270,7 +273,7 @@ export function DashboardPage() {
           <h1 className="dashboard-title">Hola 👋</h1>
           <p className="dashboard-subtitle">
             {hasActivities 
-              ? `Tienes ${stats.actividadesHoy + stats.pendientes + stats.enProgreso} tareas pendientes`
+              ? `Tienes ${actividadesParaHoy + stats.pendientes + stats.enProgreso} tareas pendientes`
               : '¡Comienza a organizar tus tareas!'
             }
           </p>
@@ -353,7 +356,7 @@ export function DashboardPage() {
         <div className="quick-stat-card highlight">
           <div className="quick-stat-icon">🎯</div>
           <div className="quick-stat-content">
-            <span className="quick-stat-value">{stats.actividadesHoy}</span>
+            <span className="quick-stat-value">{actividadesParaHoy}</span>
             <span className="quick-stat-label">Para hoy</span>
           </div>
         </div>
