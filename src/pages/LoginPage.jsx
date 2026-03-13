@@ -7,10 +7,6 @@ import SuccessMessage from '../components/login/SuccessMessage';
 import './LoginPage.css';
 // import Hoy from './Hoy';
 
-// ── Credentials for demo ─────────────────────────────────────
-const VALID_EMAIL    = 'root@root.com';
-const VALID_PASSWORD = 'rootroot';
-
 // ── Validation helpers ────────────────────────────────────────
 function isValidEmail(v) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
@@ -136,24 +132,24 @@ export default function LoginPage({ onLoginSuccess }) {
     if (!valid) { shake(); return; }
 
     setLoading(true);
-// modificado temporalmente para modo demo sin backend, validando localmente con credenciales fijas. En producción, aquí iría la llamada real al backend:
+
     try {
-      // ─ MODO DEMO: valida localmente sin backend ─────────────────
-      if (emailVal === VALID_EMAIL && pwVal === VALID_PASSWORD) {
-        // Simular token y login exitoso
-        localStorage.setItem("token", "demo-token-" + Date.now());
-        localStorage.setItem("userEmail", emailVal);
-        console.log('✓ Login demo exitoso (sin backend)');
-        // Redirect immediately
-        navigate("/hoy");
-        return;
-      }
+      const data = await login({
+        email: emailVal,
+        password: pwVal,
+      });
 
-      // Si no coinciden las credenciales demo, error
-      setEmailError("Credenciales incorrectas (modo demo)");
-      setPasswordError("Usa: " + VALID_EMAIL + " / " + VALID_PASSWORD);
+      // Guardar token y email
+      localStorage.setItem("token", data.access);
+      localStorage.setItem("userEmail", emailVal);
+
+      // Redirect immediately
+      navigate("/hoy");
+
+    } catch (error) {
+      setEmailError("Credenciales incorrectas");
+      setPasswordError("Verifica tus datos");
       shake();
-
     } finally {
       setLoading(false);
     }
