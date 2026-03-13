@@ -537,10 +537,18 @@
 }
 
 .activity-meta {
-  display: block;
+  display: flex;
+  gap: 6px;
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 2px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.activity-meta .activity-date {
+  color: var(--primary);
+  font-weight: 500;
 }
 
 .activity-meta.overdue-date {

@@ -18,6 +18,7 @@ function DashboardActivityItem({ activity, isExpanded, onToggle, onEdit, onDelet
           <span className="activity-title">{activity.titulo}</span>
           <span className="activity-meta">
             {activity.materia} • {activity.horasComp || 0}h/{activity.horasEst || 0}h
+            {activity.fecha && <span className="activity-date"> • 📅 {activity.fecha}</span>}
           </span>
         </div>
         <div className={`status-badge ${activity.estado}`}>
