@@ -39,6 +39,48 @@ export function DashboardPage() {
     };
   }, [activities]);
 
+  // Get activities grouped by date
+  const groupedActivities = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0];
+    
+    const overdue = [];
+    const todayActivities = [];
+    const upcoming = [];
+    
+    activities.forEach(activity => {
+      if (!activity.fecha) {
+        upcoming.push(activity);
+        return;
+      }
+      
+      const activityDate = new Date(activity.fecha);
+      activityDate.setHours(0, 0, 0, 0);
+      
+      if (activityDate < today) {
+        overdue.push(activity);
+      } else if (activityDate.getTime() === today.getTime()) {
+        todayActivities.push(activity);
+      } else {
+        upcoming.push(activity);
+      }
+    });
+    
+    // Sort each group
+    const sortByDate = (a, b) => {
+      if (!a.fecha) return 1;
+      if (!b.fecha) return -1;
+      return new Date(a.fecha) - new Date(b.fecha);
+    };
+    
+    return {
+      overdue: overdue.sort(sortByDate),
+      today: todayActivities.sort(sortByDate),
+      upcoming: upcoming.sort(sortByDate)
+    };
+  }, [activities]);
+
   // Get recent activities (last 5)
   const recentActivities = useMemo(() => {
     return [...activities]
@@ -132,6 +174,75 @@ export function DashboardPage() {
             ))}
           </ul>
         ) : (
+          <p className="no-activities">No hay actividades todavía. ¡Crea una!</p>
+        )}
+      </div>
+
+      {/* Grouped Activities */}
+      <div className="grouped-section">
+        <h3>Mis Actividades</h3>
+        
+        {/* Vencidas */}
+        {groupedActivities.overdue.length > 0 && (
+          <div className="activity-group">
+            <h4 className="group-title overdue">
+              <span className="group-icon">⚠️</span>
+              Vencidas
+              <span className="group-count">{groupedActivities.overdue.length}</span>
+            </h4>
+            <ul className="group-list">
+              {groupedActivities.overdue.map(activity => (
+                <li key={activity.id} className="group-item">
+                  <span className={`status-dot ${activity.estado}`}></span>
+                  <span className="group-item-title">{activity.titulo}</span>
+                  <span className="group-item-date">{activity.fecha}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        
+        {/* Hoy */}
+        {groupedActivities.today.length > 0 && (
+          <div className="activity-group">
+            <h4 className="group-title today">
+              <span className="group-icon">📅</span>
+              Hoy
+              <span className="group-count">{groupedActivities.today.length}</span>
+            </h4>
+            <ul className="group-list">
+              {groupedActivities.today.map(activity => (
+                <li key={activity.id} className="group-item">
+                  <span className={`status-dot ${activity.estado}`}></span>
+                  <span className="group-item-title">{activity.titulo}</span>
+                  <span className={`badge badge-${activity.estado}`}>{activity.estado}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        
+        {/* Próximas */}
+        {groupedActivities.upcoming.length > 0 && (
+          <div className="activity-group">
+            <h4 className="group-title upcoming">
+              <span className="group-icon">📆</span>
+              Próximas
+              <span className="group-count">{groupedActivities.upcoming.length}</span>
+            </h4>
+            <ul className="group-list">
+              {groupedActivities.upcoming.map(activity => (
+                <li key={activity.id} className="group-item">
+                  <span className={`status-dot ${activity.estado}`}></span>
+                  <span className="group-item-title">{activity.titulo}</span>
+                  <span className="group-item-date">{activity.fecha}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        
+        {activities.length === 0 && (
           <p className="no-activities">No hay actividades todavía. ¡Crea una!</p>
         )}
       </div>
