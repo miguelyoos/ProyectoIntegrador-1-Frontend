@@ -463,6 +463,14 @@
   margin-bottom: 0;
 }
 
+.activity-item-wrapper .subtasks-panel {
+  margin-top: -4px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border: 1px solid var(--border-light);
+  border-top: none;
+}
+
 .activity-item.expanded {
   border-color: var(--primary-light);
   background: #faf8ff;
