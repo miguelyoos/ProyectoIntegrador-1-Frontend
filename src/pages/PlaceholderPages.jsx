@@ -190,9 +190,10 @@ export function DashboardPage() {
       return sum + (a.subtasks?.filter(s => s.done).length || 0);
     }, 0);
 
-    // Get today's date
-    const today = new Date().toISOString().split('T')[0];
-    const actividadesHoy = activities.filter(a => a.fecha === today).length;
+    // Get today's date (local time)
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const actividadesHoy = activities.filter(a => a.fecha === todayStr).length;
 
     // Overdue count
     const yesterday = new Date();
