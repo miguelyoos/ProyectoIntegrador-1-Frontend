@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ActivitiesProvider } from "../context/ActivitiesContext";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
-import Hoy from "../pages/actividades";
+import actividades from "../pages/actividades";
 import { DashboardPage, CalendarioPage } from '../pages/PlaceholderPages';
 import ProtectedRoute from "../routes/ProtectedRoute";
 import Layout from "../components/layout/Layout";
