@@ -160,6 +160,11 @@ export function DashboardPage() {
     closeSubtaskModal();
   }
 
+  const subtaskParent = subtaskActivityId ? activities.find(a => a.id === subtaskActivityId) : null;
+  const editingSubtask = editingSubtaskId && subtaskParent
+    ? (subtaskParent.subtasks || []).find(s => s.id === editingSubtaskId)
+    : null;
+
   // Delete handlers
   function askDelete(id) {
     setDeletingActivityId(id);
@@ -289,7 +294,7 @@ export function DashboardPage() {
       </header>
 
       {hasPendingOrSubtasks && (
-      /* Progress Overview Card */}
+      /* Progress Overview Card */
       <section className="progress-card">
         <div className="progress-header-row">
           <h2>Tu Progreso</h2>
@@ -492,8 +497,8 @@ export function DashboardPage() {
       {/* Subtask Modal */}
       <SubtaskModal
         open={subtaskModalOpen}
-        activityId={subtaskActivityId}
-        editingSubtaskId={editingSubtaskId}
+        parentActivity={subtaskParent}
+        editingSubtask={editingSubtask}
         onClose={closeSubtaskModal}
         onSave={handleSaveSubtask}
       />
