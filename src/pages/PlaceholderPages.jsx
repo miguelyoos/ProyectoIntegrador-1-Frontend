@@ -380,46 +380,55 @@ export function DashboardPage() {
 
       {/* Quick Stats Row */}
       <section className="quick-stats">
-        <div className="quick-stat-card highlight">
+        <div className={`quick-stat-card highlight ${collapsedSections.today ? 'collapsed' : ''}`} onClick={() => toggleSection('today')}>
           <div className="quick-stat-icon">🎯</div>
           <div className="quick-stat-content">
             <span className="quick-stat-value">{actividadesParaHoy}</span>
             <span className="quick-stat-label">Para hoy</span>
           </div>
+          <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         </div>
         
-        <div className="quick-stat-card warning">
+        <div className={`quick-stat-card warning ${collapsedSections.overdue ? 'collapsed' : ''}`} onClick={() => toggleSection('overdue')}>
           <div className="quick-stat-icon">⚠️</div>
           <div className="quick-stat-content">
             <span className="quick-stat-value">{stats.vencidas}</span>
             <span className="quick-stat-label">Vencidas</span>
           </div>
+          <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         </div>
         
-        <div className="quick-stat-card">
+        <div className={`quick-stat-card ${collapsedSections.upcoming ? 'collapsed' : ''}`} onClick={() => toggleSection('upcoming')}>
           <div className="quick-stat-icon">📆</div>
           <div className="quick-stat-content">
             <span className="quick-stat-value">{groupedActivities.upcoming.length}</span>
             <span className="quick-stat-label">Próximas</span>
           </div>
+          <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         </div>
       </section>
 
-      {/* Activities by Status */}
-      <section className="activities-section">
-        {/* Today's Activities */}
+      {/* Activities by Status - Columns */}
+      <section className="activities-columns">
+        {/* Today's Activities Column */}
         {groupedActivities.today.length > 0 && (
-          <div className={`activity-group-card today ${collapsedSections.today ? 'collapsed' : ''}`}>
-            <div className="group-header" onClick={() => toggleSection('today')}>
-              <span className="group-emoji">📅</span>
+          <div className={`activity-column today ${collapsedSections.today ? 'collapsed' : ''}`}>
+            <div className="column-header" onClick={() => toggleSection('today')}>
+              <span className="column-emoji">🎯</span>
               <h3>Para hoy</h3>
-              <span className="group-count">{groupedActivities.today.length}</span>
-              <svg className="collapse-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <span className="column-count">{groupedActivities.today.length}</span>
+              <svg className="column-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </div>
             {!collapsedSections.today && (
-              <ul className="activity-list">
+              <ul className="column-activity-list">
                 {groupedActivities.today.map(activity => (
                   <DashboardActivityItem
                     key={activity.id}
@@ -437,19 +446,19 @@ export function DashboardPage() {
           </div>
         )}
 
-        {/* Overdue Activities */}
+        {/* Overdue Activities Column */}
         {groupedActivities.overdue.length > 0 && (
-          <div className={`activity-group-card overdue ${collapsedSections.overdue ? 'collapsed' : ''}`}>
-            <div className="group-header" onClick={() => toggleSection('overdue')}>
-              <span className="group-emoji">⚠️</span>
+          <div className={`activity-column overdue ${collapsedSections.overdue ? 'collapsed' : ''}`}>
+            <div className="column-header" onClick={() => toggleSection('overdue')}>
+              <span className="column-emoji">⚠️</span>
               <h3>Vencidas</h3>
-              <span className="group-count">{groupedActivities.overdue.length}</span>
-              <svg className="collapse-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <span className="column-count">{groupedActivities.overdue.length}</span>
+              <svg className="column-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </div>
             {!collapsedSections.overdue && (
-              <ul className="activity-list">
+              <ul className="column-activity-list">
                 {groupedActivities.overdue.map(activity => (
                   <DashboardActivityItem
                     key={activity.id}
@@ -467,19 +476,19 @@ export function DashboardPage() {
           </div>
         )}
 
-        {/* Upcoming Activities */}
+        {/* Upcoming Activities Column */}
         {groupedActivities.upcoming.length > 0 && (
-          <div className={`activity-group-card upcoming ${collapsedSections.upcoming ? 'collapsed' : ''}`}>
-            <div className="group-header" onClick={() => toggleSection('upcoming')}>
-              <span className="group-emoji">📆</span>
+          <div className={`activity-column upcoming ${collapsedSections.upcoming ? 'collapsed' : ''}`}>
+            <div className="column-header" onClick={() => toggleSection('upcoming')}>
+              <span className="column-emoji">📆</span>
               <h3>Próximas</h3>
-              <span className="group-count">{groupedActivities.upcoming.length}</span>
-              <svg className="collapse-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <span className="column-count">{groupedActivities.upcoming.length}</span>
+              <svg className="column-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </div>
             {!collapsedSections.upcoming && (
-              <ul className="activity-list">
+              <ul className="column-activity-list">
                 {groupedActivities.upcoming.slice(0, 5).map(activity => (
                   <DashboardActivityItem
                     key={activity.id}
