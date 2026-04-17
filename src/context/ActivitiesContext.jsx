@@ -15,11 +15,54 @@ import {
 
 import { calcEstado } from "../utils/helpers";
 
+const MOCK_DATA = [
+  {
+    id: 1,
+    titulo: "Examen de Cálculo",
+    materia: "Matemáticas",
+    fecha: "2026-04-20",
+    prioridad: "Alta",
+    estado: "pendiente",
+    horasEst: 5,
+    horasComp: 2,
+    subtasks: [
+      { id: 1, nombre: "Repasar límites", fecha_entrega: "2026-04-18", horas_estimadas: 2, done: false },
+      { id: 2, nombre: "Hacer ejercicios derivadas", fecha_entrega: "2026-04-19", horas_estimadas: 3, done: true }
+    ]
+  },
+  {
+    id: 2,
+    titulo: "Proyecto Final",
+    materia: "Programación",
+    fecha: "2026-04-25",
+    prioridad: "Media",
+    estado: "progreso",
+    horasEst: 10,
+    horasComp: 4,
+    subtasks: [
+      { id: 3, nombre: "Diseñar base de datos", fecha_entrega: "2026-04-22", horas_estimadas: 4, done: true },
+      { id: 4, nombre: "Implementar API", fecha_entrega: "2026-04-24", horas_estimadas: 6, done: false }
+    ]
+  },
+  {
+    id: 3,
+    titulo: "Ensayo Historia",
+    materia: "Historia",
+    fecha: "2026-04-15",
+    prioridad: "Baja",
+    estado: "completada",
+    horasEst: 3,
+    horasComp: 3,
+    subtasks: []
+  }
+];
+
 const ActivitiesContext = createContext(null);
 
 export function ActivitiesProvider({ children }) {
   const [activities, setActivities] = useState([]);
   const [expandedCards, setExpandedCards] = useState(new Set());
+  const [isLocalMode, setIsLocalMode] = useState(false);
 
   // 🔹 Cargar actividades y sus subtareas
   useEffect(() => {
@@ -30,12 +73,10 @@ export function ActivitiesProvider({ children }) {
       try {
         const acts = await obtenerActividades();
         
-        if (cancelled) return; // No actualizar si el componente se desmontó
+        if (cancelled) return;
         
         console.log("🔍 Actividades recibidas:", acts);
 
-        // Las subtareas ya vienen incluidas en la respuesta del backend
-        // Recalcular el estado basado en horasComp y horasEst
         const actsConSubtareas = acts.map((a) => ({
           ...a,
           subtasks: a.subtareas || a.subtasks || [],
@@ -44,8 +85,18 @@ export function ActivitiesProvider({ children }) {
 
         setActivities(actsConSubtareas);
       } catch (error) {
+        console.log("⚠️ Backend no disponible, usando modo local...");
         if (!cancelled) {
-          console.error("Error cargando actividades", error);
+          setIsLocalMode(true);
+          localStorage.setItem("localMode", "true");
+          // Cargar datos mock desde localStorage o usar datos por defecto
+          const stored = localStorage.getItem('localActivities');
+          if (stored) {
+            setActivities(JSON.parse(stored));
+          } else {
+            setActivities(MOCK_DATA);
+            localStorage.setItem('localActivities', JSON.stringify(MOCK_DATA));
+          }
         }
       }
     }
@@ -53,12 +104,34 @@ export function ActivitiesProvider({ children }) {
     cargarActividades();
 
     return () => {
-      cancelled = true; // Cancelar si el componente se desmonta
+      cancelled = true;
     };
   }, []);
 
   // 🔹 Crear actividad
   async function addActivity(data) {
+    if (isLocalMode) {
+      const newId = Date.now();
+      const nueva = {
+        id: newId,
+        titulo: data.titulo,
+        materia: data.materia,
+        fecha: data.fecha,
+        prioridad: data.prioridad,
+        tipo: data.tipo,
+        estado: 'pendiente',
+        horasEst: data.horasEst || 0,
+        horasComp: 0,
+        subtasks: []
+      };
+      setActivities((prev) => {
+        const updated = [...prev, nueva];
+        localStorage.setItem('localActivities', JSON.stringify(updated));
+        return updated;
+      });
+      return nueva;
+    }
+
     try {
       const nueva = await crearActividad(data);
 
@@ -82,6 +155,15 @@ export function ActivitiesProvider({ children }) {
 
   // 🔹 Actualizar actividad
   async function updateActivity(id, data) {
+    if (isLocalMode) {
+      setActivities((prev) => {
+        const updated = prev.map((a) => (a.id === id ? { ...a, ...data } : a));
+        localStorage.setItem('localActivities', JSON.stringify(updated));
+        return updated;
+      });
+      return;
+    }
+
     try {
       const actualizada = await actualizarActividad(id, data);
 
@@ -95,12 +177,21 @@ export function ActivitiesProvider({ children }) {
     } catch (error) {
       console.error("Error actualizando actividad", error);
       console.error("Detalles del error:", error.response?.data);
-      throw error; // Re-lanzar para que el componente pueda manejarlo
+      throw error;
     }
   }
 
   // 🔹 Eliminar actividad
   async function deleteActivity(id) {
+    if (isLocalMode) {
+      setActivities((prev) => {
+        const updated = prev.filter((a) => a.id !== id);
+        localStorage.setItem('localActivities', JSON.stringify(updated));
+        return updated;
+      });
+      return;
+    }
+
     try {
       await eliminarActividad(id);
 
@@ -126,15 +217,37 @@ export function ActivitiesProvider({ children }) {
 
   // 🔹 Crear subtarea
   async function addSubtask(activityId, subtask) {
+    if (isLocalMode) {
+      const newId = Date.now();
+      const nueva = {
+        id: newId,
+        nombre: subtask.nombre,
+        fecha_entrega: subtask.fecha,
+        horas_estimadas: subtask.horas,
+        done: false
+      };
+      setActivities((prev) => {
+        const updated = prev.map((a) =>
+          a.id === activityId
+            ? { ...a, subtasks: [...(a.subtasks || []), nueva] }
+            : a
+        );
+        localStorage.setItem('localActivities', JSON.stringify(updated));
+        return updated;
+      });
+      setExpandedCards((prev) => new Set(prev).add(activityId));
+      return;
+    }
+
     try {
       console.log("📤 Enviando subtarea:", subtask);
       console.log("📤 Para actividad ID:", activityId);
       
       const nueva = await crearSubtarea({
         nombre: subtask.nombre,
-        fecha_entrega: subtask.fecha, // Backend espera 'fecha_entrega'
-        horas_estimadas: subtask.horas, // Backend espera 'horas_estimadas'
-        actividad: activityId, // Backend espera 'actividad' no 'actividadId'
+        fecha_entrega: subtask.fecha,
+        horas_estimadas: subtask.horas,
+        actividad: activityId,
       });
 
       console.log("✅ Subtarea creada:", nueva);
@@ -160,29 +273,57 @@ export function ActivitiesProvider({ children }) {
 
   // 🔹 Actualizar subtarea (local)
   async function updateSubtask(activityId, subtaskId, data) {
-  try {
+    if (isLocalMode) {
+      setActivities((prev) => {
+        const updated = prev.map((a) =>
+          a.id === activityId
+            ? {
+                ...a,
+                subtasks: (a.subtasks || []).map((s) =>
+                  s.id === subtaskId ? { ...s, ...data } : s
+                ),
+              }
+            : a
+        );
+        localStorage.setItem('localActivities', JSON.stringify(updated));
+        return updated;
+      });
+      return;
+    }
 
-    const actualizada = await editarSubtarea(subtaskId, data);
+    try {
+      const actualizada = await editarSubtarea(subtaskId, data);
 
-    setActivities((prev) =>
-      prev.map((a) =>
-        a.id === activityId
-          ? {
-              ...a,
-              subtasks: (a.subtasks || []).map((s) =>
-                s.id === subtaskId ? { ...s, ...actualizada } : s
-              ),
-            }
-          : a
-      )
-    );
-
-  } catch (error) {
-    console.error("Error actualizando subtarea", error);
+      setActivities((prev) =>
+        prev.map((a) =>
+          a.id === activityId
+            ? {
+                ...a,
+                subtasks: (a.subtasks || []).map((s) =>
+                  s.id === subtaskId ? { ...s, ...actualizada } : s
+                ),
+              }
+            : a
+        )
+      );
+    } catch (error) {
+      console.error("Error actualizando subtarea", error);
+    }
   }
-}
 
   const deleteSubtask = async (activityId, subtaskId) => {
+    if (isLocalMode) {
+      setActivities((prev) => {
+        const updated = prev.map((a) =>
+          a.id === activityId
+            ? { ...a, subtasks: a.subtasks.filter(s => s.id !== subtaskId) }
+            : a
+        );
+        localStorage.setItem('localActivities', JSON.stringify(updated));
+        return updated;
+      });
+      return;
+    }
 
     await eliminarSubtarea(subtaskId);
 
@@ -195,32 +336,49 @@ export function ActivitiesProvider({ children }) {
             }
           : act
       )
-  );
-};
+    );
+  };
 
   // 🔹 Toggle estado subtarea
   const toggleSubtask = async (activityId, subtaskId) => {
+    const activity = activities.find(a => a.id === activityId);
+    const sub = activity.subtasks.find(s => s.id === subtaskId);
 
-  const activity = activities.find(a => a.id === activityId);
-  const sub = activity.subtasks.find(s => s.id === subtaskId);
+    if (isLocalMode) {
+      setActivities((prev) => {
+        const updated = prev.map((act) =>
+          act.id === activityId
+            ? {
+                ...act,
+                subtasks: act.subtasks.map((s) =>
+                  s.id === subtaskId ? { ...s, done: !s.done } : s
+                ),
+              }
+            : act
+        );
+        localStorage.setItem('localActivities', JSON.stringify(updated));
+        return updated;
+      });
+      return;
+    }
 
- const updated = await editarSubtarea(subtaskId, {
-  done: !sub.done
-});
+    const updated = await editarSubtarea(subtaskId, {
+      done: !sub.done
+    });
 
-  setActivities(prev =>
-    prev.map(act =>
-      act.id === activityId
-        ? {
-            ...act,
-            subtasks: act.subtasks.map(s =>
-              s.id === subtaskId ? updated : s
-            )
-          }
-        : act
-    )
-  );
-};
+    setActivities(prev =>
+      prev.map(act =>
+        act.id === activityId
+          ? {
+              ...act,
+              subtasks: act.subtasks.map(s =>
+                s.id === subtaskId ? updated : s
+              )
+            }
+          : act
+      )
+    );
+  };
 
   return (
     <ActivitiesContext.Provider

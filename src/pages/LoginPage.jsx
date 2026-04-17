@@ -219,6 +219,30 @@ export default function LoginPage({ onLoginSuccess }) {
         <p className="login-footer">
           <a href="#" onClick={(e) => { e.preventDefault(); navigate('/register'); }}>Crea una gratis</a> — tarda menos de un minuto.
         </p>
+
+        {/* Modo local */}
+        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <button 
+            type="button"
+            onClick={() => {
+              localStorage.setItem("localMode", "true");
+              localStorage.setItem("token", "local-demo");
+              localStorage.setItem("userEmail", "demo@local.com");
+              navigate("/hoy");
+            }}
+            style={{
+              background: 'none',
+              border: '1px dashed #999',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              color: '#666'
+            }}
+          >
+            🧪 Modo demo sin cuenta
+          </button>
+        </div>
       </div>
     </div>
   );

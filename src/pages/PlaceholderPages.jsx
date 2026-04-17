@@ -8,6 +8,49 @@ import SubtaskRequest from '../components/hoy/SubtaskRequest';
 import ConfirmDialog from '../components/hoy/ConfirmDialog';
 import './PlaceholderPage.css';
 
+// Dashboard compact subtask item
+function DashboardSubtaskItem({ subtask, parentActivity, onAddSubtask, onEditSubtask, onDeleteSubtask }) {
+  return (
+    <div className="compact-subtask-item">
+      <div className="compact-subtask-header">
+        <span className="compact-subtask-name">{subtask.nombre}</span>
+        <div className="compact-subtask-actions">
+          <button 
+            className="compact-subtask-btn" 
+            title="Editar subtarea"
+            onClick={() => onEditSubtask(parentActivity.id, subtask.id)}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+            </svg>
+          </button>
+          <button 
+            className="compact-subtask-btn add" 
+            title="Añadir subtarea"
+            onClick={() => onAddSubtask(parentActivity.id)}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <button 
+            className="compact-subtask-btn delete" 
+            title="Eliminar subtarea"
+            onClick={() => onDeleteSubtask(parentActivity.id, subtask.id)}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <span className="compact-subtask-parent">de: {parentActivity.titulo}</span>
+    </div>
+  );
+}
+
 // Dashboard activity item component with expand/collapse
 function DashboardActivityItem({ activity, isExpanded, onToggle, onEdit, onDelete, onAddSubtask, onEditSubtask }) {
   return (
@@ -46,19 +89,22 @@ function DashboardActivityItem({ activity, isExpanded, onToggle, onEdit, onDelet
         </div>
       </div>
       {isExpanded && (
-        <SubtasksPanel
-          activity={activity}
-          open={true}
-          onAddSubtask={onAddSubtask}
-          onEditSubtask={onEditSubtask}
-        />
+        <div className="compact-subtasks">
+          {(activity.subtasks || []).length === 0 ? (
+            <div className="compact-subtask-empty">No hay subtareas</div>
+          ) : (
+            (activity.subtasks || []).map(sub => (
+              <DashboardSubtaskItem key={sub.id} subtask={sub} parentActivity={activity} />
+            ))
+          )}
+        </div>
       )}
     </li>
   );
 }
 
 export function DashboardPage() {
-  const { activities, addActivity, updateActivity, deleteActivity, expandedCards, toggleExpand, addSubtask, updateSubtask } = useActivities();
+  const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask, deleteSubtask } = useActivities();
   const navigate = useNavigate();
 
   // Modal state
@@ -73,6 +119,10 @@ export function DashboardPage() {
   // Delete dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingActivityId, setDeletingActivityId] = useState(null);
+
+  // Subtask delete dialog state
+  const [deleteSubtaskDialogOpen, setDeleteSubtaskDialogOpen] = useState(false);
+  const [deletingSubtask, setDeletingSubtask] = useState(null);
 
   // Subtask request dialog state
   const [subtaskRequestOpen, setSubtaskRequestOpen] = useState(false);
@@ -105,6 +155,24 @@ export function DashboardPage() {
   function handleDeleteActivity(id) {
     setDeletingActivityId(id);
     setDeleteDialogOpen(true);
+  }
+
+  function handleDeleteSubtask(activityId, subtaskId) {
+    setDeletingSubtask({ activityId, subtaskId });
+    setDeleteSubtaskDialogOpen(true);
+  }
+
+  function handleConfirmDeleteSubtask() {
+    if (deletingSubtask) {
+      deleteSubtask(deletingSubtask.activityId, deletingSubtask.subtaskId);
+    }
+    setDeleteSubtaskDialogOpen(false);
+    setDeletingSubtask(null);
+  }
+
+  function handleCancelDeleteSubtask() {
+    setDeleteSubtaskDialogOpen(false);
+    setDeletingSubtask(null);
   }
 
   // Get activity being edited
@@ -378,145 +446,130 @@ export function DashboardPage() {
       </section>
       )}
 
-      {/* Quick Stats Row */}
-      <section className="quick-stats">
-        <div className={`quick-stat-card highlight ${collapsedSections.today ? 'collapsed' : ''}`} onClick={() => toggleSection('today')}>
-          <div className="quick-stat-icon">🎯</div>
-          <div className="quick-stat-content">
-            <span className="quick-stat-value">{actividadesParaHoy}</span>
-            <span className="quick-stat-label">Para hoy</span>
-          </div>
-          <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-        
-        <div className={`quick-stat-card warning ${collapsedSections.overdue ? 'collapsed' : ''}`} onClick={() => toggleSection('overdue')}>
-          <div className="quick-stat-icon">⚠️</div>
-          <div className="quick-stat-content">
-            <span className="quick-stat-value">{stats.vencidas}</span>
-            <span className="quick-stat-label">Vencidas</span>
-          </div>
-          <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-        
-        <div className={`quick-stat-card ${collapsedSections.upcoming ? 'collapsed' : ''}`} onClick={() => toggleSection('upcoming')}>
-          <div className="quick-stat-icon">📆</div>
-          <div className="quick-stat-content">
-            <span className="quick-stat-value">{groupedActivities.upcoming.length}</span>
-            <span className="quick-stat-label">Próximas</span>
-          </div>
-          <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-      </section>
-
-      {/* Activities by Status - Columns */}
-      <section className="activities-columns">
-        {/* Today's Activities Column */}
-        {groupedActivities.today.length > 0 && (
-          <div className={`activity-column today ${collapsedSections.today ? 'collapsed' : ''}`}>
-            <div className="column-header" onClick={() => toggleSection('today')}>
-              <span className="column-emoji">🎯</span>
-              <h3>Para hoy</h3>
-              <span className="column-count">{groupedActivities.today.length}</span>
-              <svg className="column-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
+      {/* Dashboard Grid - Buttons + Columns */}
+      <section className="dashboard-grid">
+        {/* Para Hoy - Mostrar subtareas directamente */}
+        <div className="dashboard-grid-item">
+          <button className={`quick-stat-btn highlight ${collapsedSections.today ? 'collapsed' : ''}`} onClick={() => toggleSection('today')}>
+            <div className="quick-stat-icon">🎯</div>
+            <div className="quick-stat-content">
+              <span className="quick-stat-value">{actividadesParaHoy}</span>
+              <span className="quick-stat-label">Para hoy</span>
             </div>
-            {!collapsedSections.today && (
-              <ul className="column-activity-list">
-                {groupedActivities.today.map(activity => (
-                  <DashboardActivityItem
-                    key={activity.id}
-                    activity={activity}
-                    isExpanded={expandedActivityId === activity.id}
-                    onToggle={() => toggleActivityExpand(activity.id)}
-                    onEdit={handleEditActivity}
-                    onDelete={handleDeleteActivity}
-                    onAddSubtask={openAddSubtask}
-                    onEditSubtask={openEditSubtask}
-                  />
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-
-        {/* Overdue Activities Column */}
-        {groupedActivities.overdue.length > 0 && (
-          <div className={`activity-column overdue ${collapsedSections.overdue ? 'collapsed' : ''}`}>
-            <div className="column-header" onClick={() => toggleSection('overdue')}>
-              <span className="column-emoji">⚠️</span>
-              <h3>Vencidas</h3>
-              <span className="column-count">{groupedActivities.overdue.length}</span>
-              <svg className="column-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
+            <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+          {!collapsedSections.today && groupedActivities.today.length > 0 && (
+            <div className="activity-column today">
+              {groupedActivities.today.flatMap(activity => 
+                (activity.subtasks || []).length > 0 
+                  ? (activity.subtasks || []).map(sub => (
+                      <DashboardSubtaskItem 
+                        key={sub.id} 
+                        subtask={sub} 
+                        parentActivity={activity}
+                        onAddSubtask={openAddSubtask}
+                        onEditSubtask={openEditSubtask}
+                        onDeleteSubtask={handleDeleteSubtask}
+                      />
+                    ))
+                  : [<DashboardActivityItem 
+                      key={activity.id}
+                      activity={activity}
+                      isExpanded={expandedActivityId === activity.id}
+                      onToggle={() => toggleActivityExpand(activity.id)}
+                      onEdit={handleEditActivity}
+                      onDelete={handleDeleteActivity}
+                      onAddSubtask={openAddSubtask}
+                      onEditSubtask={openEditSubtask}
+                    />]
+              )}
             </div>
-            {!collapsedSections.overdue && (
-              <ul className="column-activity-list">
-                {groupedActivities.overdue.map(activity => (
-                  <DashboardActivityItem
-                    key={activity.id}
-                    activity={activity}
-                    isExpanded={expandedActivityId === activity.id}
-                    onToggle={() => toggleActivityExpand(activity.id)}
-                    onEdit={handleEditActivity}
-                    onDelete={handleDeleteActivity}
-                    onAddSubtask={openAddSubtask}
-                    onEditSubtask={openEditSubtask}
-                  />
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Upcoming Activities Column */}
-        {groupedActivities.upcoming.length > 0 && (
-          <div className={`activity-column upcoming ${collapsedSections.upcoming ? 'collapsed' : ''}`}>
-            <div className="column-header" onClick={() => toggleSection('upcoming')}>
-              <span className="column-emoji">📆</span>
-              <h3>Próximas</h3>
-              <span className="column-count">{groupedActivities.upcoming.length}</span>
-              <svg className="column-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
+        {/* Vencidas */}
+        <div className="dashboard-grid-item">
+          <button className={`quick-stat-btn warning ${collapsedSections.overdue ? 'collapsed' : ''}`} onClick={() => toggleSection('overdue')}>
+            <div className="quick-stat-icon">⚠️</div>
+            <div className="quick-stat-content">
+              <span className="quick-stat-value">{stats.vencidas}</span>
+              <span className="quick-stat-label">Vencidas</span>
             </div>
-            {!collapsedSections.upcoming && (
-              <ul className="column-activity-list">
-                {groupedActivities.upcoming.slice(0, 5).map(activity => (
-                  <DashboardActivityItem
-                    key={activity.id}
-                    activity={activity}
-                    isExpanded={expandedActivityId === activity.id}
-                    onToggle={() => toggleActivityExpand(activity.id)}
-                    onEdit={handleEditActivity}
-                    onDelete={handleDeleteActivity}
-                    onAddSubtask={openAddSubtask}
-                    onEditSubtask={openEditSubtask}
-                  />
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
+            <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+          {!collapsedSections.overdue && groupedActivities.overdue.length > 0 && (
+            <div className="activity-column overdue">
+              {groupedActivities.overdue.flatMap(activity => 
+                (activity.subtasks || []).length > 0 
+                  ? (activity.subtasks || []).map(sub => (
+                      <DashboardSubtaskItem 
+                        key={sub.id} 
+                        subtask={sub} 
+                        parentActivity={activity}
+                        onAddSubtask={openAddSubtask}
+                        onEditSubtask={openEditSubtask}
+                        onDeleteSubtask={handleDeleteSubtask}
+                      />
+                    ))
+                  : [<DashboardActivityItem 
+                      key={activity.id}
+                      activity={activity}
+                      isExpanded={expandedActivityId === activity.id}
+                      onToggle={() => toggleActivityExpand(activity.id)}
+                      onEdit={handleEditActivity}
+                      onDelete={handleDeleteActivity}
+                      onAddSubtask={openAddSubtask}
+                      onEditSubtask={openEditSubtask}
+                    />]
+              )}
+            </div>
+          )}
+        </div>
 
-        {/* Empty State */}
-        {!hasActivities && (
-          <div className="empty-state-card">
-            <div className="empty-icon">✨</div>
-            <h3>¡Bienvenido a tu dashboard!</h3>
-            <p>No tienes ninguna actividad todavía. Crea tu primera tarea y comienza a organizar tu tiempo.</p>
-            <button className="btn-primary" onClick={openNewActivity}>
-              Crear primera tarea
-            </button>
-          </div>
-        )}
+        {/* Próximas */}
+        <div className="dashboard-grid-item">
+          <button className={`quick-stat-btn ${collapsedSections.upcoming ? 'collapsed' : ''}`} onClick={() => toggleSection('upcoming')}>
+            <div className="quick-stat-icon">📆</div>
+            <div className="quick-stat-content">
+              <span className="quick-stat-value">{groupedActivities.upcoming.length}</span>
+              <span className="quick-stat-label">Próximas</span>
+            </div>
+            <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+          {!collapsedSections.upcoming && groupedActivities.upcoming.length > 0 && (
+            <div className="activity-column upcoming">
+              {groupedActivities.upcoming.slice(0, 5).flatMap(activity => 
+                (activity.subtasks || []).length > 0 
+                  ? (activity.subtasks || []).map(sub => (
+                      <DashboardSubtaskItem 
+                        key={sub.id} 
+                        subtask={sub} 
+                        parentActivity={activity}
+                        onAddSubtask={openAddSubtask}
+                        onEditSubtask={openEditSubtask}
+                        onDeleteSubtask={handleDeleteSubtask}
+                      />
+                    ))
+                  : [<DashboardActivityItem 
+                      key={activity.id}
+                      activity={activity}
+                      isExpanded={expandedActivityId === activity.id}
+                      onToggle={() => toggleActivityExpand(activity.id)}
+                      onEdit={handleEditActivity}
+                      onDelete={handleDeleteActivity}
+                      onAddSubtask={openAddSubtask}
+                      onEditSubtask={openEditSubtask}
+                    />]
+              )}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Activity Modal */}
@@ -543,6 +596,15 @@ export function DashboardPage() {
         message={deletingActivityId ? `¿Eliminar la actividad? Esta acción no se puede deshacer.` : ''}
         onCancel={() => setDeleteDialogOpen(false)}
         onConfirm={handleConfirmDelete}
+      />
+
+      {/* Subtask Delete Confirmation */}
+      <ConfirmDialog
+        open={deleteSubtaskDialogOpen}
+        title="¿Eliminar subtarea?"
+        message={deletingSubtask ? `¿Eliminar la subtarea? Esta acción no se puede deshacer.` : ''}
+        onCancel={handleCancelDeleteSubtask}
+        onConfirm={handleConfirmDeleteSubtask}
       />
 
       {/* Subtask Request Dialog */}
