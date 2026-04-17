@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActivities } from '../context/ActivitiesContext';
 import ActivityModal from '../components/hoy/ActivityModal';
-import SubtasksPanel from '../components/hoy/SubtasksPanel';
 import SubtaskModal from '../components/hoy/SubtaskModal';
 import SubtaskRequest from '../components/hoy/SubtaskRequest';
 import ConfirmDialog from '../components/hoy/ConfirmDialog';
@@ -571,6 +570,22 @@ export function DashboardPage() {
           )}
         </div>
       </section>
+
+      {/* Empty State - cuando no hay actividades */}
+      {!hasActivities && (
+        <div className="dashboard-empty">
+          <div className="empty-icon">📝</div>
+          <h3>¿No tienes actividades todavía?</h3>
+          <p>Crea tu primera tarea para comenzar a organizar tu tiempo y alcanzar tus metas académicas.</p>
+          <button className="btn-primary" onClick={openNewActivity}>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Crear mi primera tarea
+          </button>
+        </div>
+      )}
 
       {/* Activity Modal */}
       <ActivityModal
