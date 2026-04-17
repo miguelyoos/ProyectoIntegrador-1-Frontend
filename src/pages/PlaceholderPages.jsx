@@ -81,6 +81,17 @@ export function DashboardPage() {
   // Track expanded activity in dashboard
   const [expandedActivityId, setExpandedActivityId] = useState(null);
 
+  // Collapsible section states
+  const [collapsedSections, setCollapsedSections] = useState({
+    today: false,
+    overdue: false,
+    upcoming: false
+  });
+
+  function toggleSection(section) {
+    setCollapsedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  }
+
   function toggleActivityExpand(activityId) {
     setExpandedActivityId(expandedActivityId === activityId ? null : activityId);
   }
@@ -284,13 +295,21 @@ export function DashboardPage() {
             }
           </p>
         </div>
-        <button className="btn-new-task" onClick={openNewActivity}>
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Nueva Tarea
-        </button>
+        <div className="header-actions">
+          <button className="btn-see-all" onClick={() => navigate('/actividades')}>
+            Ver todas
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+          <button className="btn-new-task" onClick={openNewActivity}>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Nueva Tarea
+          </button>
+        </div>
       </header>
 
       {hasPendingOrSubtasks && (
@@ -378,98 +397,103 @@ export function DashboardPage() {
         </div>
         
         <div className="quick-stat-card">
-          <div className="quick-stat-icon">📝</div>
+          <div className="quick-stat-icon">📆</div>
           <div className="quick-stat-content">
-            <span className="quick-stat-value">{stats.subtareasCompletadas}/{stats.totalSubtareas}</span>
-            <span className="quick-stat-label">Subtareas</span>
+            <span className="quick-stat-value">{groupedActivities.upcoming.length}</span>
+            <span className="quick-stat-label">Próximas</span>
           </div>
         </div>
       </section>
 
       {/* Activities by Status */}
       <section className="activities-section">
-        <div className="section-header">
-          <h2>Tus Actividades</h2>
-          <button className="btn-see-all" onClick={() => navigate('/actividades')}>
-            Ver todas
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-        </div>
-
         {/* Today's Activities */}
         {groupedActivities.today.length > 0 && (
-          <div className="activity-group-card today">
-            <div className="group-header">
+          <div className={`activity-group-card today ${collapsedSections.today ? 'collapsed' : ''}`}>
+            <div className="group-header" onClick={() => toggleSection('today')}>
               <span className="group-emoji">📅</span>
-              <h3>Hoy</h3>
+              <h3>Para hoy</h3>
               <span className="group-count">{groupedActivities.today.length}</span>
+              <svg className="collapse-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </div>
-            <ul className="activity-list">
-              {groupedActivities.today.map(activity => (
-                <DashboardActivityItem
-                  key={activity.id}
-                  activity={activity}
-                  isExpanded={expandedActivityId === activity.id}
-                  onToggle={() => toggleActivityExpand(activity.id)}
-                  onEdit={handleEditActivity}
-                  onDelete={handleDeleteActivity}
-                  onAddSubtask={openAddSubtask}
-                  onEditSubtask={openEditSubtask}
-                />
-              ))}
-            </ul>
+            {!collapsedSections.today && (
+              <ul className="activity-list">
+                {groupedActivities.today.map(activity => (
+                  <DashboardActivityItem
+                    key={activity.id}
+                    activity={activity}
+                    isExpanded={expandedActivityId === activity.id}
+                    onToggle={() => toggleActivityExpand(activity.id)}
+                    onEdit={handleEditActivity}
+                    onDelete={handleDeleteActivity}
+                    onAddSubtask={openAddSubtask}
+                    onEditSubtask={openEditSubtask}
+                  />
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
         {/* Overdue Activities */}
         {groupedActivities.overdue.length > 0 && (
-          <div className="activity-group-card overdue">
-            <div className="group-header">
+          <div className={`activity-group-card overdue ${collapsedSections.overdue ? 'collapsed' : ''}`}>
+            <div className="group-header" onClick={() => toggleSection('overdue')}>
               <span className="group-emoji">⚠️</span>
               <h3>Vencidas</h3>
               <span className="group-count">{groupedActivities.overdue.length}</span>
+              <svg className="collapse-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </div>
-            <ul className="activity-list">
-              {groupedActivities.overdue.map(activity => (
-                <DashboardActivityItem
-                  key={activity.id}
-                  activity={activity}
-                  isExpanded={expandedActivityId === activity.id}
-                  onToggle={() => toggleActivityExpand(activity.id)}
-                  onEdit={handleEditActivity}
-                  onDelete={handleDeleteActivity}
-                  onAddSubtask={openAddSubtask}
-                  onEditSubtask={openEditSubtask}
-                />
-              ))}
-            </ul>
+            {!collapsedSections.overdue && (
+              <ul className="activity-list">
+                {groupedActivities.overdue.map(activity => (
+                  <DashboardActivityItem
+                    key={activity.id}
+                    activity={activity}
+                    isExpanded={expandedActivityId === activity.id}
+                    onToggle={() => toggleActivityExpand(activity.id)}
+                    onEdit={handleEditActivity}
+                    onDelete={handleDeleteActivity}
+                    onAddSubtask={openAddSubtask}
+                    onEditSubtask={openEditSubtask}
+                  />
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
         {/* Upcoming Activities */}
         {groupedActivities.upcoming.length > 0 && (
-          <div className="activity-group-card upcoming">
-            <div className="group-header">
+          <div className={`activity-group-card upcoming ${collapsedSections.upcoming ? 'collapsed' : ''}`}>
+            <div className="group-header" onClick={() => toggleSection('upcoming')}>
               <span className="group-emoji">📆</span>
               <h3>Próximas</h3>
               <span className="group-count">{groupedActivities.upcoming.length}</span>
+              <svg className="collapse-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </div>
-            <ul className="activity-list">
-              {groupedActivities.upcoming.slice(0, 5).map(activity => (
-                <DashboardActivityItem
-                  key={activity.id}
-                  activity={activity}
-                  isExpanded={expandedActivityId === activity.id}
-                  onToggle={() => toggleActivityExpand(activity.id)}
-                  onEdit={handleEditActivity}
-                  onDelete={handleDeleteActivity}
-                  onAddSubtask={openAddSubtask}
-                  onEditSubtask={openEditSubtask}
-                />
-              ))}
-            </ul>
+            {!collapsedSections.upcoming && (
+              <ul className="activity-list">
+                {groupedActivities.upcoming.slice(0, 5).map(activity => (
+                  <DashboardActivityItem
+                    key={activity.id}
+                    activity={activity}
+                    isExpanded={expandedActivityId === activity.id}
+                    onToggle={() => toggleActivityExpand(activity.id)}
+                    onEdit={handleEditActivity}
+                    onDelete={handleDeleteActivity}
+                    onAddSubtask={openAddSubtask}
+                    onEditSubtask={openEditSubtask}
+                  />
+                ))}
+              </ul>
+            )}
           </div>
         )}
 

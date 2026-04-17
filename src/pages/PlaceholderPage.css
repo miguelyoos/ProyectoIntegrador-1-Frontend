@@ -58,6 +58,33 @@
   flex: 1;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-see-all {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--white);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-see-all:hover {
+  background: var(--bg);
+  border-color: var(--purple-light);
+  color: var(--purple);
+}
+
 .dashboard-title {
   font-family: 'Syne', sans-serif;
   font-size: 32px;
@@ -333,38 +360,6 @@
   border: 1px solid var(--border-light);
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.section-header h2 {
-  font-family: 'Syne', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.btn-see-all {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  color: var(--primary);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.btn-see-all:hover {
-  gap: 8px;
-}
-
 /* Activity Group Card */
 .activity-group-card {
   margin-bottom: 20px;
@@ -398,6 +393,28 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 16px;
+  cursor: pointer;
+  padding: 4px 0;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.group-header:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.collapse-icon {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  color: var(--text-muted);
+}
+
+.activity-group-card.collapsed .collapse-icon {
+  transform: rotate(-90deg);
+}
+
+.activity-group-card.collapsed .activity-list {
+  display: none;
 }
 
 .group-emoji {
