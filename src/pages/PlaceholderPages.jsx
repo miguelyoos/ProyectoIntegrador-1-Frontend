@@ -264,6 +264,7 @@ export function DashboardPage() {
   const actividadesParaHoy = groupedActivities.today.length;
 
   const hasActivities = activities.length > 0;
+  const hasPendingOrSubtasks = stats.pendientes > 0 || stats.totalSubtareas > 0;
 
   return (
     <main className="dashboard-page">
@@ -287,7 +288,8 @@ export function DashboardPage() {
         </button>
       </header>
 
-      {/* Progress Overview Card */}
+      {hasPendingOrSubtasks && (
+      /* Progress Overview Card */}
       <section className="progress-card">
         <div className="progress-header-row">
           <h2>Tu Progreso</h2>
@@ -350,6 +352,7 @@ export function DashboardPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Quick Stats Row */}
       <section className="quick-stats">

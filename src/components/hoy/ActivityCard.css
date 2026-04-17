@@ -16,7 +16,7 @@
 }
 
 .activity-card {
-  background: var(--white);
+  background: var(--gray);
   padding: 16px 18px;
   display: flex;
   align-items: center;
