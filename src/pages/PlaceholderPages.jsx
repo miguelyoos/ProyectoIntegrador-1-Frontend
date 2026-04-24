@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActivities } from '../context/ActivitiesContext';
+import { formatShortDate } from '../utils/helpers';
 import ActivityModal from '../components/hoy/ActivityModal';
 import SubtaskModal from '../components/hoy/SubtaskModal';
 import SubtaskRequest from '../components/hoy/SubtaskRequest';
@@ -45,7 +46,12 @@ function DashboardSubtaskItem({ subtask, parentActivity, onAddSubtask, onEditSub
           </button>
         </div>
       </div>
-      <span className="compact-subtask-parent">de: {parentActivity.titulo}</span>
+      <div className="compact-subtask-meta">
+        <span className="compact-subtask-parent">de: {parentActivity.titulo}</span>
+        {subtask.fecha_entrega && (
+          <span className="compact-subtask-date">📅 {formatShortDate(subtask.fecha_entrega)}</span>
+        )}
+      </div>
     </div>
   );
 }
@@ -127,6 +133,10 @@ export function DashboardPage() {
   const [subtaskRequestOpen, setSubtaskRequestOpen] = useState(false);
   const [subtaskRequestActivity, setSubtaskRequestActivity] = useState(null);
 
+  // Success message state
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+
   // Track expanded activity in dashboard
   const [expandedActivityId, setExpandedActivityId] = useState(null);
 
@@ -186,6 +196,13 @@ export function DashboardPage() {
   function handleSaveActivity(data) {
     if (editingActivityId) {
       updateActivity(editingActivityId, data);
+      // Show success message for date changes
+      setSuccessMessage('Fecha Cambiada Exitosamente');
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        setSuccessMessage('');
+      }, 3000);
     } else {
       addActivity(data).then((newActivity) => {
         // Show subtask request dialog for new activities
@@ -571,23 +588,7 @@ export function DashboardPage() {
         </div>
       </section>
 
-      {/* Empty State - cuando no hay actividades */}
-      {!hasActivities && (
-        <div className="dashboard-empty">
-          <div className="empty-icon">📝</div>
-          <h3>¿No tienes actividades todavía?</h3>
-          <p>Crea tu primera tarea para comenzar a organizar tu tiempo y alcanzar tus metas académicas.</p>
-          <button className="btn-primary" onClick={openNewActivity}>
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Crear mi primera tarea
-          </button>
-        </div>
-      )}
-
-      {/* Activity Modal */}
+        {/* Activity Modal */}
       <ActivityModal
         open={activityModalOpen}
         editingActivity={editingActivity}
@@ -629,6 +630,13 @@ export function DashboardPage() {
         onConfirm={handleSubtaskRequestConfirm}
         onCancel={handleSubtaskRequestCancel}
       />
+
+      {/* Success Message */}
+      {showSuccess && (
+        <div className="success-banner show">
+          {successMessage}
+        </div>
+      )}
     </main>
   );
 }

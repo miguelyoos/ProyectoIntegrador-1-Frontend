@@ -55,7 +55,7 @@ export default function SubtasksPanel({ activity, open, onAddSubtask, onEditSubt
                 />
                 <span className={`subtask-name${s.done ? ' done' : ''}`}>{s.nombre}</span>
                 <span className="subtask-meta">
-                  {s.fecha && <span>📅 {formatShortDate(s.fecha)}</span>}
+                  {s.fecha_entrega && <span>📅 {formatShortDate(s.fecha_entrega)}</span>}
                   <span>⏱ {s.horas_estimadas}h</span>
                 </span>
                 <div className="subtask-actions">
