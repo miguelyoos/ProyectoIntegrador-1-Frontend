@@ -21,7 +21,8 @@ export default function Actividades() {
 
   // Total horas estimadas de actividades de HOY no completadas
   const totalHoras = useMemo(() => {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const t = new Date();
+    const todayStr = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
     return activities
       .filter(a => a.estado !== 'completada' && a.fecha === todayStr)
       .reduce((sum, a) => sum + (Number(a.horasEst) || 0), 0);
@@ -250,6 +251,8 @@ export default function Actividades() {
         editingActivity={editingActivity}
         onClose={closeActivityModal}
         onSave={handleSaveActivity}
+        limiteDiario={limiteDiario}
+        horasActuales={totalHoras}
       />
 
       <SubtaskModal

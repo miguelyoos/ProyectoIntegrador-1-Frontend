@@ -145,7 +145,8 @@ export function DashboardPage() {
   const wasOverloaded = useRef(false);
 
   const totalHorasActivas = useMemo(() => {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const t = new Date();
+    const todayStr = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
     return activities
       .filter(a => a.estado !== 'completada' && a.fecha === todayStr)
       .reduce((sum, a) => sum + (Number(a.horasEst) || 0), 0);
@@ -360,13 +361,21 @@ export function DashboardPage() {
 
     // Get today's date (local time)
     const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    const actividadesHoy = activities.filter(a => a.fecha === todayStr).length;
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    
+    // Count activities for today (considering subtask dates too)
+    const actividadesHoy = activities.filter(a => {
+      if (a.fecha === todayStr) return true;
+      if (a.subtasks && a.subtasks.length > 0) {
+        return a.subtasks.some(s => !s.done && s.fecha_entrega === todayStr);
+      }
+      return false;
+    }).length;
 
     // Overdue count
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
     const vencidas = activities.filter(a => a.fecha && a.fecha < yesterdayStr && a.estado !== 'completada').length;
 
     return {
@@ -384,16 +393,10 @@ export function DashboardPage() {
     };
   }, [activities]);
 
-  // Get activities grouped by date
+  // Get activities grouped by date (subtasks classified individually)
   const groupedActivities = useMemo(() => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString().split('T')[0];
-    
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    yesterday.setHours(0, 0, 0, 0);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     
     const overdue = [];
     const todayActivities = [];
@@ -404,12 +407,37 @@ export function DashboardPage() {
         upcoming.push(activity);
         return;
       }
+
+      const hasSubtasks = activity.subtasks && activity.subtasks.length > 0;
       
-      if (activity.fecha <= yesterdayStr && activity.estado !== 'completada') {
-        overdue.push(activity);
-      } else if (activity.fecha === todayStr) {
-        todayActivities.push(activity);
-      } else {
+      // Si no tiene subtareas, clasificar por fecha de la actividad
+      if (!hasSubtasks) {
+        if (activity.fecha < todayStr && activity.estado !== 'completada') {
+          overdue.push(activity);
+        } else if (activity.fecha === todayStr) {
+          todayActivities.push(activity);
+        } else {
+          upcoming.push(activity);
+        }
+        return;
+      }
+
+      // Si tiene subtareas, crear copias de la actividad con subtareas filtradas por fecha
+      const subtareasOverdue = activity.subtasks.filter(s => s.fecha_entrega && s.fecha_entrega < todayStr);
+      const subtareasHoy = activity.subtasks.filter(s => s.fecha_entrega && s.fecha_entrega === todayStr);
+      const subtareasUpcoming = activity.subtasks.filter(s => !s.fecha_entrega || s.fecha_entrega > todayStr);
+
+      if (subtareasOverdue.length > 0) {
+        overdue.push({ ...activity, subtasks: subtareasOverdue });
+      }
+      if (subtareasHoy.length > 0) {
+        todayActivities.push({ ...activity, subtasks: subtareasHoy });
+      }
+      if (subtareasUpcoming.length > 0) {
+        upcoming.push({ ...activity, subtasks: subtareasUpcoming });
+      }
+      // Si todas las subtareas están completadas
+      if (subtareasOverdue.length === 0 && subtareasHoy.length === 0 && subtareasUpcoming.length === 0) {
         upcoming.push(activity);
       }
     });
@@ -707,6 +735,8 @@ export function DashboardPage() {
         editingActivity={editingActivity}
         onClose={closeActivityModal}
         onSave={handleSaveActivity}
+        limiteDiario={limiteDiario}
+        horasActuales={totalHorasActivas}
       />
 
       {/* Subtask Modal */}

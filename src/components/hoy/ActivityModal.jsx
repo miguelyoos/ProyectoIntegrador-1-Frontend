@@ -24,7 +24,7 @@ function SpinnerField({ id, value, min, onChange, onValidate }) {
   );
 }
 
-export default function ActivityModal({ open, editingActivity, onClose, onSave }) {
+export default function ActivityModal({ open, editingActivity, onClose, onSave, limiteDiario, horasActuales }) {
   const [titulo, setTitulo] = useState('');
   const [tipo, setTipo] = useState('Tarea');
   const [materia, setMateria] = useState('');
@@ -104,6 +104,41 @@ export default function ActivityModal({ open, editingActivity, onClose, onSave }
       setTimeout(() => setShaking(false), 400);
       return;
     }
+
+    // Validar límite diario de horas
+    if (limiteDiario && !editingActivity) {
+      const horasNuevas = Number(horasEst);
+      const horasActualesNum = Number(horasActuales) || 0;
+      const t = new Date();
+      const todayStr = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+      
+      if (fecha === todayStr && (horasActualesNum + horasNuevas) > limiteDiario) {
+        setBannerMsg(`No puedes crear esta actividad. Tenés ${horasActualesNum}h activas hoy y con ${horasNuevas}h más superarías tu límite diario de ${limiteDiario}h.`);
+        setShaking(true);
+        setTimeout(() => setShaking(false), 400);
+        return;
+      }
+    }
+
+    // Validar límite al editar si cambia fecha a hoy o cambia horas
+    if (limiteDiario && editingActivity) {
+      const horasNuevas = Number(horasEst);
+      const horasViejas = Number(editingActivity.horasEst) || 0;
+      const horasActualesNum = Number(horasActuales) || 0;
+      const t = new Date();
+      const todayStr = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+      
+      if (fecha === todayStr) {
+        const horasSinEsta = editingActivity.fecha === todayStr ? horasActualesNum - horasViejas : horasActualesNum;
+        if ((horasSinEsta + horasNuevas) > limiteDiario) {
+          setBannerMsg(`No puedes asignar ${horasNuevas}h. Con las actividades actuales (${horasSinEsta}h) superarías tu límite diario de ${limiteDiario}h.`);
+          setShaking(true);
+          setTimeout(() => setShaking(false), 400);
+          return;
+        }
+      }
+    }
+
     setBannerMsg('');
     onSave({
       titulo, tipo, materia, desc, fecha, prioridad,
