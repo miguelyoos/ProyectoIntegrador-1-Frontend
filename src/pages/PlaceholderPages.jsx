@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActivities } from '../context/ActivitiesContext';
 import { formatShortDate } from '../utils/helpers';
@@ -137,6 +137,34 @@ export function DashboardPage() {
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [newLimit, setNewLimit] = useState(limiteDiario);
   const [limitError, setLimitError] = useState('');
+
+  // Conflict banner state
+  const [conflictDismissed, setConflictDismissed] = useState(false);
+  const [resolvedVisible, setResolvedVisible] = useState(false);
+  const resolvedTimer = useRef(null);
+  const wasOverloaded = useRef(false);
+
+  const totalHorasActivas = useMemo(() => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    return activities
+      .filter(a => a.estado !== 'completada' && a.fecha === todayStr)
+      .reduce((sum, a) => sum + (Number(a.horasEst) || 0), 0);
+  }, [activities]);
+  const isOverloaded = totalHorasActivas > limiteDiario;
+
+  useEffect(() => {
+    if (wasOverloaded.current && !isOverloaded) {
+      setConflictDismissed(false);
+      setResolvedVisible(true);
+      clearTimeout(resolvedTimer.current);
+      resolvedTimer.current = setTimeout(() => setResolvedVisible(false), 5000);
+    }
+    wasOverloaded.current = isOverloaded;
+  }, [isOverloaded]);
+
+  useEffect(() => {
+    if (isOverloaded) setConflictDismissed(false);
+  }, [isOverloaded]);
 
   // Success message state
   const [successMessage, setSuccessMessage] = useState('');
@@ -437,8 +465,7 @@ export function DashboardPage() {
       </header>
 
       {/* Daily Limit Section - Compact */}
-      <section className="daily-limit-compact">
-        <div className="limit-compact-header">
+      <section className="daily-limit-compact">        <div className="limit-compact-header">
           <span className="limit-compact-title">Límite: {stats.horasCompletadas}h / {limiteDiario}h</span>
           <div className="limit-compact-bar">
             <div 
@@ -453,6 +480,34 @@ export function DashboardPage() {
           </svg>
         </button>
       </section>
+
+      {/* SCRUM-50: Sobrecarga en dashboard */}
+      {isOverloaded && !conflictDismissed && (
+        <div className="conflict-banner" role="alert">
+          <span className="conflict-banner__icon">⚠️</span>
+          <div className="conflict-banner__body">
+            <div className="conflict-banner__title">Sobrecarga de horas detectada</div>
+            <div className="conflict-banner__desc">
+              Tenés <strong>{totalHorasActivas}h</strong> estimadas en actividades activas, pero tu límite diario es <strong>{limiteDiario}h</strong>. Considerá reducir horas o completar actividades.
+            </div>
+          </div>
+          <button className="conflict-banner__close" onClick={() => setConflictDismissed(true)} aria-label="Cerrar aviso">✕</button>
+        </div>
+      )}
+
+      {/* SCRUM-54: Resolución de conflicto en dashboard */}
+      {resolvedVisible && (
+        <div className="conflict-banner resolved" role="status">
+          <span className="conflict-banner__icon">✅</span>
+          <div className="conflict-banner__body">
+            <div className="conflict-banner__title">Conflicto resuelto</div>
+            <div className="conflict-banner__desc">
+              Tus horas activas ({totalHorasActivas}h) ya están dentro del límite diario ({limiteDiario}h).
+            </div>
+          </div>
+          <button className="conflict-banner__close" onClick={() => setResolvedVisible(false)} aria-label="Cerrar aviso">✕</button>
+        </div>
+      )}
 
       {hasPendingOrSubtasks && (
       /* Progress Overview Card */
@@ -700,15 +755,25 @@ export function DashboardPage() {
             <div className="modal-body">
               <div className="form-group">
                 <label htmlFor="daily-limit">Horas por día (1-16)</label>
-                <input
-                  id="daily-limit"
-                  type="number"
-                  min="1"
-                  max="16"
-                  step="0.5"
-                  value={newLimit}
-                  onChange={e => { setNewLimit(e.target.value); setLimitError(''); }}
-                />
+                <div className="hours-display">
+                  <span className="hours-icon">⏱️</span>
+                  <div className="hours-input-wrap">
+                    <input
+                      id="daily-limit"
+                      type="number"
+                      min="1"
+                      max="16"
+                      step="0.5"
+                      value={newLimit}
+                      onChange={e => { setNewLimit(e.target.value); setLimitError(''); }}
+                    />
+                    <div className="hours-unit">horas por día</div>
+                  </div>
+                </div>
+                <div className="range-hint">
+                  <span>Mín: 1h</span>
+                  <span>Máx: 16h</span>
+                </div>
                 {limitError && <span className="field-error-msg">{limitError}</span>}
                 <span className="field-hint">Actualmente: {limiteDiario} horas</span>
               </div>

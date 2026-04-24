@@ -170,3 +170,64 @@ textarea {
   font-weight: 500;
 }
 .form-error-banner.show { display: block; }
+
+/* ── Conflict overload banner (shared) ── */
+.conflict-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff7ed;
+  border: 1.5px solid #f97316;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  animation: conflictSlideDown 0.25s ease;
+}
+
+.conflict-banner.resolved {
+  background: #f0fdf4;
+  border-color: #22c55e;
+}
+
+@keyframes conflictSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.conflict-banner__icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.conflict-banner__body { flex: 1; }
+
+.conflict-banner__title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #c2410c;
+  margin-bottom: 2px;
+}
+
+.conflict-banner.resolved .conflict-banner__title { color: #15803d; }
+
+.conflict-banner__desc {
+  font-size: 13px;
+  color: #7c3a0a;
+  line-height: 1.4;
+}
+
+.conflict-banner.resolved .conflict-banner__desc { color: #166534; }
+
+.conflict-banner__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #9a3412;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.conflict-banner.resolved .conflict-banner__close { color: #15803d; }

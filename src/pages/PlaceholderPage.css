@@ -1105,37 +1105,83 @@
     border-radius: var(--radius-xl);
     width: 90%;
     max-width: 400px;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    overflow: hidden;
   }
   
   .daily-limit-modal .modal-body {
-    padding: 24px;
+    padding: 8px 24px 24px 24px;
   }
     
   .daily-limit-modal .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 4px;
   }
     
   .daily-limit-modal label {
     display: block;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 8px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .daily-limit-modal .hours-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #f8f7ff;
+    border: 2px solid var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 0 0 4px rgba(123, 92, 229, 0.08);
+  }
+
+  .daily-limit-modal .hours-icon {
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .daily-limit-modal .hours-input-wrap {
+    flex: 1;
   }
     
   .daily-limit-modal input[type="number"] {
     width: 100%;
-    padding: 12px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    transition: border-color 0.2s;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--primary);
+    font-family: 'Syne', sans-serif;
+    -moz-appearance: textfield;
+  }
+
+  .daily-limit-modal input[type="number"]::-webkit-inner-spin-button,
+  .daily-limit-modal input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
   }
     
   .daily-limit-modal input:focus {
     outline: none;
-    border-color: var(--purple);
+  }
+
+  .daily-limit-modal .hours-unit {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .daily-limit-modal .range-hint {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 0 4px;
+    margin-bottom: 4px;
   }
     
   .daily-limit-modal .field-hint {
@@ -1143,6 +1189,7 @@
     font-size: 12px;
     color: var(--text-muted);
     margin-top: 6px;
+    text-align: center;
   }
     
   .daily-limit-modal .field-error-msg {
@@ -1150,32 +1197,36 @@
     font-size: 12px;
     color: #dc2626;
     margin-top: 6px;
+    text-align: center;
   }
     
   .daily-limit-modal .modal-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
+    gap: 10px;
     padding: 16px 24px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border-light);
+    background: #fafafa;
   }
   
   .daily-limit-modal .btn-cancel {
     padding: 10px 20px;
     background: none;
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border-light);
     border-radius: var(--radius-md);
     cursor: pointer;
     font-size: 14px;
+    color: var(--text-secondary);
     transition: all 0.2s;
   }
     
   .daily-limit-modal .btn-cancel:hover {
-    background: var(--bg);
+    background: var(--bg-hover);
+    border-color: var(--text-muted);
   }
     
   .daily-limit-modal .btn-primary {
-    padding: 10px 20px;
+    padding: 10px 24px;
     background: var(--primary);
     color: white;
     border: none;
@@ -1184,10 +1235,13 @@
     font-size: 14px;
     font-weight: 600;
     transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(123, 92, 229, 0.35);
   }
     
   .daily-limit-modal .btn-primary:hover {
-    background: var(--primary-dark);
+    background: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(123, 92, 229, 0.45);
   }
  
 /* Success Banner */
@@ -1231,3 +1285,118 @@
    }
 }
 
+
+/* ==========================================
+   DAILY LIMIT COMPACT (dashboard)
+   ========================================== */
+.daily-limit-compact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.limit-compact-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.limit-compact-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.limit-compact-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--border-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.limit-compact-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.btn-compact-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btn-compact-edit:hover {
+  background: var(--bg-hover);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ==========================================
+   MODAL OVERLAY + HEADER/CLOSE (shared)
+   ========================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  width: 90%;
+  max-width: 420px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0 24px;
+}
+
+.modal-header h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--text-muted);
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1;
+  transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}

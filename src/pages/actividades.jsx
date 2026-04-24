@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useActivities } from '../context/ActivitiesContext';
 import { PRIO_ORDER } from '../utils/helpers';
 import ActivityFilters from '../components/hoy/ActivityFilters';
@@ -11,9 +11,40 @@ import SubtaskRequest from '../components/hoy/SubtaskRequest';
 import './actividades.css';
 
 export default function Actividades() {
-  const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask, toggleExpand } = useActivities();
-  
-  
+  const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask, toggleExpand, limiteDiario } = useActivities();
+
+  // Conflict banner state
+  const [conflictDismissed, setConflictDismissed] = useState(false);
+  const [resolvedVisible, setResolvedVisible] = useState(false);
+  const resolvedTimer = useRef(null);
+  const wasOverloaded = useRef(false);
+
+  // Total horas estimadas de actividades de HOY no completadas
+  const totalHoras = useMemo(() => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    return activities
+      .filter(a => a.estado !== 'completada' && a.fecha === todayStr)
+      .reduce((sum, a) => sum + (Number(a.horasEst) || 0), 0);
+  }, [activities]);
+
+  const isOverloaded = totalHoras > limiteDiario;
+
+  // Detectar cuando se resuelve el conflicto (SCRUM-54)
+  useEffect(() => {
+    if (wasOverloaded.current && !isOverloaded) {
+      setConflictDismissed(false);
+      setResolvedVisible(true);
+      clearTimeout(resolvedTimer.current);
+      resolvedTimer.current = setTimeout(() => setResolvedVisible(false), 5000);
+    }
+    wasOverloaded.current = isOverloaded;
+  }, [isOverloaded]);
+
+  // Resetear dismiss cuando vuelve a haber conflicto
+  useEffect(() => {
+    if (isOverloaded) setConflictDismissed(false);
+  }, [isOverloaded]);
+
   // Filter state
   const [search, setSearch] = useState('');
   const [tipo, setTipo] = useState(null);
@@ -147,6 +178,34 @@ export default function Actividades() {
     <>
       <main className="page-main">
         <h2 className="section-title">Mis Actividades</h2>
+
+        {/* SCRUM-50: Mensaje de conflicto de sobrecarga */}
+        {isOverloaded && !conflictDismissed && (
+          <div className="conflict-banner" role="alert">
+            <span className="conflict-banner__icon">⚠️</span>
+            <div className="conflict-banner__body">
+              <div className="conflict-banner__title">Sobrecarga de horas detectada</div>
+              <div className="conflict-banner__desc">
+                Tenés <strong>{totalHoras}h</strong> estimadas en actividades activas, pero tu límite diario es <strong>{limiteDiario}h</strong>. Considerá reducir horas o completar actividades.
+              </div>
+            </div>
+            <button className="conflict-banner__close" onClick={() => setConflictDismissed(true)} aria-label="Cerrar aviso">✕</button>
+          </div>
+        )}
+
+        {/* SCRUM-54: Resultado final de resolución de conflicto */}
+        {resolvedVisible && (
+          <div className="conflict-banner resolved" role="status">
+            <span className="conflict-banner__icon">✅</span>
+            <div className="conflict-banner__body">
+              <div className="conflict-banner__title">Conflicto resuelto</div>
+              <div className="conflict-banner__desc">
+                Tus horas activas ({totalHoras}h) ya están dentro del límite diario ({limiteDiario}h).
+              </div>
+            </div>
+            <button className="conflict-banner__close" onClick={() => setResolvedVisible(false)} aria-label="Cerrar aviso">✕</button>
+          </div>
+        )}
 
         <ActivityFilters
           search={search}
