@@ -13,6 +13,8 @@ import {
   eliminarSubtarea,
 } from "../services/subtareasService";
 
+import { obtenerPerfil, actualizarLimite } from "../services/profileService";
+
 import { calcEstado } from "../utils/helpers";
 
 const MOCK_DATA = [
@@ -63,14 +65,25 @@ export function ActivitiesProvider({ children }) {
   const [activities, setActivities] = useState([]);
   const [expandedCards, setExpandedCards] = useState(new Set());
   const [isLocalMode, setIsLocalMode] = useState(false);
+  const [limiteDiario, setLimiteDiario] = useState(6); // Valor por defecto: 6 horas
 
-  // 🔹 Cargar actividades y sus subtareas
+  // 🔹 Cargar actividades y su límite diario
   useEffect(() => {
     let cancelled = false;
 
-    async function cargarActividades() {
-      console.log("Cargando actividades...");
+    async function cargarDatos() {
+      console.log("🔍 Cargando actividades...");
       try {
+        // Cargar perfil para obtener límite diario
+        try {
+          const perfil = await obtenerPerfil();
+          if (!cancelled && perfil.limite_diario_horas) {
+            setLimiteDiario(Number(perfil.limite_diario_horas));
+          }
+        } catch (error) {
+          console.log("⚠️ No se pudo cargar el perfil, usando límite por defecto");
+        }
+
         const acts = await obtenerActividades();
         
         if (cancelled) return;
@@ -89,7 +102,6 @@ export function ActivitiesProvider({ children }) {
         if (!cancelled) {
           setIsLocalMode(true);
           localStorage.setItem("localMode", "true");
-          // Cargar datos mock desde localStorage o usar datos por defecto
           const stored = localStorage.getItem('localActivities');
           if (stored) {
             setActivities(JSON.parse(stored));
@@ -97,11 +109,13 @@ export function ActivitiesProvider({ children }) {
             setActivities(MOCK_DATA);
             localStorage.setItem('localActivities', JSON.stringify(MOCK_DATA));
           }
+          // Límite por defecto en modo local
+          setLimiteDiario(6);
         }
       }
     }
 
-    cargarActividades();
+    cargarDatos();
 
     return () => {
       cancelled = true;
@@ -380,11 +394,12 @@ export function ActivitiesProvider({ children }) {
     );
   };
 
-  return (
+    return (
     <ActivitiesContext.Provider
       value={{
         activities,
         expandedCards,
+        limiteDiario,
         addActivity,
         updateActivity,
         deleteActivity,
@@ -393,6 +408,20 @@ export function ActivitiesProvider({ children }) {
         updateSubtask,
         deleteSubtask,
         toggleSubtask,
+        actualizarLimite: async (nuevoLimite) => {
+          if (isLocalMode) {
+            setLimiteDiario(nuevoLimite);
+            return;
+          }
+          try {
+            const response = await actualizarLimite(nuevoLimite);
+            if (response.profile?.limite_diario_horas) {
+              setLimiteDiario(Number(response.profile.limite_diario_horas));
+            }
+          } catch (error) {
+            console.error("Error actualizando límite:", error);
+          }
+        }
       }}
     >
       {children}

@@ -109,7 +109,7 @@ function DashboardActivityItem({ activity, isExpanded, onToggle, onEdit, onDelet
 }
 
 export function DashboardPage() {
-  const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask, deleteSubtask } = useActivities();
+  const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask, deleteSubtask, limiteDiario, actualizarLimite } = useActivities();
   const navigate = useNavigate();
 
   // Modal state
@@ -129,9 +129,14 @@ export function DashboardPage() {
   const [deleteSubtaskDialogOpen, setDeleteSubtaskDialogOpen] = useState(false);
   const [deletingSubtask, setDeletingSubtask] = useState(null);
 
-  // Subtask request dialog state
+// Subtask request dialog state
   const [subtaskRequestOpen, setSubtaskRequestOpen] = useState(false);
   const [subtaskRequestActivity, setSubtaskRequestActivity] = useState(null);
+
+  // Daily limit modal state
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [newLimit, setNewLimit] = useState(limiteDiario);
+  const [limitError, setLimitError] = useState('');
 
   // Success message state
   const [successMessage, setSuccessMessage] = useState('');
@@ -211,6 +216,41 @@ export function DashboardPage() {
       });
     }
     closeActivityModal();
+  }
+
+  // Daily limit modal handlers
+  function handleOpenLimitModal() {
+    setNewLimit(limiteDiario);
+    setLimitError('');
+    setShowLimitModal(true);
+  }
+
+  function handleSaveLimit() {
+    const limitNum = Number(newLimit);
+    if (isNaN(limitNum)) {
+      setLimitError('Ingresa un número válido');
+      return;
+    }
+    if (limitNum < 1) {
+      setLimitError('El mínimo es 1 hora');
+      return;
+    }
+    if (limitNum > 16) {
+      setLimitError('El máximo es 16 horas');
+      return;
+    }
+    
+    actualizarLimite(limitNum).then(() => {
+      setShowLimitModal(false);
+      setSuccessMessage('Límite actualizado exitosamente');
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        setSuccessMessage('');
+      }, 3000);
+    }).catch(() => {
+      setLimitError('Error al actualizar el límite');
+    });
   }
 
   // Subtask request handlers
@@ -395,6 +435,24 @@ export function DashboardPage() {
           </button>
         </div>
       </header>
+
+      {/* Daily Limit Section - Compact */}
+      <section className="daily-limit-compact">
+        <div className="limit-compact-header">
+          <span className="limit-compact-title">Límite: {stats.horasCompletadas}h / {limiteDiario}h</span>
+          <div className="limit-compact-bar">
+            <div 
+              className="limit-compact-fill" 
+              style={{ width: `${Math.min((stats.horasCompletadas / limiteDiario) * 100, 100)}%` }}
+            ></div>
+          </div>
+        </div>
+        <button className="btn-compact-edit" onClick={() => setShowLimitModal(true)}>
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+          </svg>
+        </button>
+      </section>
 
       {hasPendingOrSubtasks && (
       /* Progress Overview Card */
@@ -630,6 +688,38 @@ export function DashboardPage() {
         onConfirm={handleSubtaskRequestConfirm}
         onCancel={handleSubtaskRequestCancel}
       />
+
+      {/* Daily Limit Modal */}
+      {showLimitModal && (
+        <div className="modal-overlay">
+          <div className="modal daily-limit-modal">
+            <div className="modal-header">
+              <h3>Editar Límite Diario</h3>
+              <button className="modal-close" onClick={() => setShowLimitModal(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label htmlFor="daily-limit">Horas por día (1-16)</label>
+                <input
+                  id="daily-limit"
+                  type="number"
+                  min="1"
+                  max="16"
+                  step="0.5"
+                  value={newLimit}
+                  onChange={e => { setNewLimit(e.target.value); setLimitError(''); }}
+                />
+                {limitError && <span className="field-error-msg">{limitError}</span>}
+                <span className="field-hint">Actualmente: {limiteDiario} horas</span>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setShowLimitModal(false)}>Cancelar</button>
+              <button className="btn-primary" onClick={handleSaveLimit}>Guardar</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Success Message */}
       {showSuccess && (

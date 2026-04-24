@@ -1004,29 +1004,192 @@
 }
 
 @media (max-width: 480px) {
-   .progress-stats {
-     flex-direction: column;
-     align-items: center;
-   }
-   
-   .quick-stats {
-     grid-template-columns: 1fr;
-   }
-   
-   .dashboard-grid {
-     grid-template-columns: 1fr;
-   }
-   
-   .progress-ring {
-     width: 120px;
-     height: 120px;
-   }
-   
-   .progress-value {
-     font-size: 26px;
-   }
- }
-
+    .progress-stats {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .quick-stats {
+      grid-template-columns: 1fr;
+    }
+    
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .progress-ring {
+      width: 120px;
+      height: 120px;
+    }
+    
+    .progress-value {
+      font-size: 26px;
+    }
+  }
+  
+  /* ==========================================
+     DAILY LIMIT SECTION
+     ========================================== */
+  .daily-limit-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    margin-bottom: 24px;
+  }
+  
+  .limit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .limit-header h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  .limit-badge {
+    background: var(--purple-light);
+    color: var(--purple);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  
+  .limit-bar {
+    height: 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  
+  .limit-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), #8b5cf6);
+    border-radius: 6px;
+    transition: width 0.3s ease;
+  }
+  
+  .limit-actions {
+    text-align: right;
+  }
+  
+  .btn-edit-limit {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+  }
+  
+  .btn-edit-limit:hover {
+    background: var(--bg);
+    border-color: var(--purple);
+    color: var(--purple);
+  }
+  
+  /* Daily Limit Modal */
+  .daily-limit-modal {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    width: 90%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .daily-limit-modal .modal-body {
+    padding: 24px;
+  }
+    
+  .daily-limit-modal .form-group {
+    margin-bottom: 20px;
+  }
+    
+  .daily-limit-modal label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+    
+  .daily-limit-modal input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+    
+  .daily-limit-modal input:focus {
+    outline: none;
+    border-color: var(--purple);
+  }
+    
+  .daily-limit-modal .field-hint {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+    
+  .daily-limit-modal .field-error-msg {
+    display: block;
+    font-size: 12px;
+    color: #dc2626;
+    margin-top: 6px;
+  }
+    
+  .daily-limit-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .daily-limit-modal .btn-cancel {
+    padding: 10px 20px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+    
+  .daily-limit-modal .btn-cancel:hover {
+    background: var(--bg);
+  }
+    
+  .daily-limit-modal .btn-primary {
+    padding: 10px 20px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+    
+  .daily-limit-modal .btn-primary:hover {
+    background: var(--primary-dark);
+  }
+ 
 /* Success Banner */
 .success-banner {
    position: fixed;
