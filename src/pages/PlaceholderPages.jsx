@@ -487,7 +487,7 @@ export function DashboardPage() {
             </div>
           )}
         </div>
-
+          
         {/* Vencidas */}
         <div className="dashboard-grid-item">
           <button className={`quick-stat-btn warning ${collapsedSections.overdue ? 'collapsed' : ''}`} onClick={() => toggleSection('overdue')}>
