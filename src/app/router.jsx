@@ -7,9 +7,19 @@ import { DashboardPage, CalendarioPage } from '../pages/PlaceholderPages';
 import ProtectedRoute from "../routes/ProtectedRoute";
 import Layout from "../components/layout/Layout";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 export default function App() {
   return (
     <BrowserRouter>
+
+      {/* TOAST AQUI */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+      />
+
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -18,7 +28,7 @@ export default function App() {
         <Route
           element={
             <ProtectedRoute>
-              <ActivitiesProvider>  {/* ← movido aquí */}
+              <ActivitiesProvider>
                 <Layout />
               </ActivitiesProvider>
             </ProtectedRoute>
@@ -28,6 +38,7 @@ export default function App() {
           <Route path="/hoy" element={<DashboardPage />} />
           <Route path="/calendario" element={<CalendarioPage />} />
         </Route>
+
       </Routes>
     </BrowserRouter>
   );

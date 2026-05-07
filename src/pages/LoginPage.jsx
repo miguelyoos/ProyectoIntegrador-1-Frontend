@@ -139,15 +139,16 @@ export default function LoginPage({ onLoginSuccess }) {
         password: pwVal,
       });
 
-      // Guardar token y email
-      localStorage.setItem("token", data.access);
+      // Guardar email del usuario
       localStorage.setItem("userEmail", emailVal);
 
       // Redirect immediately
       navigate("/hoy");
 
     } catch (error) {
-      setEmailError("Credenciales incorrectas");
+      console.error("Error de login:", error);
+      const errorMsg = error.response?.data?.detail || "Credenciales incorrectas";
+      setEmailError(errorMsg);
       setPasswordError("Verifica tus datos");
       shake();
     } finally {
