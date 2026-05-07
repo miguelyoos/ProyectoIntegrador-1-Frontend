@@ -8,6 +8,7 @@ import ActivityModal from '../components/hoy/ActivityModal';
 import SubtaskModal from '../components/hoy/SubtaskModal';
 import ConfirmDialog from '../components/hoy/ConfirmDialog';
 import SubtaskRequest from '../components/hoy/SubtaskRequest';
+import { toast } from "react-toastify";
 import './actividades.css';
 
 export default function Actividades() {
@@ -89,12 +90,18 @@ export default function Actividades() {
     });
 
     list.sort((a, b) => {
-      if (orden === 'fecha-asc') return (a.fecha || '').localeCompare(b.fecha || '');
-      if (orden === 'fecha-desc') return (b.fecha || '').localeCompare(a.fecha || '');
-      if (orden === 'prioridad') return (PRIO_ORDER[b.prioridad] || 0) - (PRIO_ORDER[a.prioridad] || 0);
-      if (orden === 'titulo') return a.titulo.localeCompare(b.titulo);
-      return 0;
-    });
+
+  // mover completadas al final
+  if (a.estado === 'completada' && b.estado !== 'completada') return 1;
+  if (a.estado !== 'completada' && b.estado === 'completada') return -1;
+
+  if (orden === 'fecha-asc') return (a.fecha || '').localeCompare(b.fecha || '');
+  if (orden === 'fecha-desc') return (b.fecha || '').localeCompare(a.fecha || '');
+  if (orden === 'prioridad') return (PRIO_ORDER[b.prioridad] || 0) - (PRIO_ORDER[a.prioridad] || 0);
+  if (orden === 'titulo') return a.titulo.localeCompare(b.titulo);
+
+  return 0;
+});
 
     return list;
   }, [activities, status, tipo, prioridad, search, orden]);
@@ -104,20 +111,34 @@ export default function Actividades() {
   function openEditActivity(id) { setEditingActivityId(id); setActivityModalOpen(true); }
   function closeActivityModal() { setActivityModalOpen(false); setEditingActivityId(null); }
 
-  function handleSaveActivity(data) {
+  async function handleSaveActivity(data) {
+  try {
+
     if (editingActivityId) {
-      updateActivity(editingActivityId, data).catch(err => {
-        alert('Error al actualizar la actividad. Revisa la consola para más detalles.');
-      });
+
+      await updateActivity(editingActivityId, data);
+
+      toast.success("Actividad actualizada correctamente");
+
     } else {
-      addActivity(data).then((newActivity) => {
-        // Show subtask request dialog for new activities
-        setSubtaskRequestActivity(newActivity);
-        setSubtaskRequestOpen(true);
-      });
+
+      const newActivity = await addActivity(data);
+
+      toast.success("Actividad guardada correctamente");
+
+      setSubtaskRequestActivity(newActivity);
+      setSubtaskRequestOpen(true);
     }
+
     closeActivityModal();
+
+  } catch (error) {
+
+    console.error(error);
+
+    toast.error("No pudimos guardar tu progreso, intenta de nuevo");
   }
+}
 
   // Delete handlers
   function askDelete(id) { setDeletingId(id); setConfirmOpen(true); }

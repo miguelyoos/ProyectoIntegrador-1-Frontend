@@ -1,12 +1,19 @@
 import api from "./axiosClient";
 
 export const login = async (credentials) => {
-  const response = await api.post("/login/", credentials);
+  try {
+    const response = await api.post("/login/", credentials);
 
-  const accessToken = response.data.access;
+    const { access, refresh } = response.data;
 
-  localStorage.setItem("token", accessToken);
-  localStorage.setItem("refresh", response.data.refresh);
+    localStorage.setItem("token", access);
+    if (refresh) {
+      localStorage.setItem("refresh", refresh);
+    }
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    console.error("Error en login:", error.response?.data || error.message);
+    throw error;
+  }
 };

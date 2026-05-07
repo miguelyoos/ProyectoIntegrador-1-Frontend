@@ -63,8 +63,8 @@
 
 .progress-fill {
   height: 100%;
-  border-radius: 4px;
-  transition: width 0.4s;
+  border-radius: 999px;
+  transition: all 0.3s ease;
 }
 
 .card-actions {
@@ -132,4 +132,55 @@
 
 .card-expand-btn.active svg {
   transform: rotate(180deg);
+}
+
+.completed-card {
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.progress-fill.low {
+  background: #ef4444;
+}
+
+.progress-fill.medium {
+  background: #facc15;
+}
+
+.progress-fill.high {
+  background: #22c55e;
+}
+.completed-card {
+  opacity: 0.5;
+}
+
+.update-panel {
+  margin-top: 12px;
+  padding: 12px;
+  border-top: 1px solid #ddd;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.update-panel select,
+.update-panel textarea {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.update-panel textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.update-panel button {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
 }
