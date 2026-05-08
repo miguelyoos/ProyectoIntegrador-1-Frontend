@@ -151,7 +151,7 @@ export default function ActivityCard({
     className={`card-expand-btn ${
       isExpanded ? 'active' : ''
     }`}
-    title="Subtareas"
+    data-tooltip="Ver subtareas"
     onClick={() => toggleExpand(activity.id)}
   >
     ▼
@@ -159,6 +159,7 @@ export default function ActivityCard({
 
   <button
     className="icon-btn edit"
+    data-tooltip="Editar actividad"
     onClick={() => onEdit(activity.id)}
   >
     ✏️
@@ -166,6 +167,7 @@ export default function ActivityCard({
 
   <button
     className="icon-btn delete"
+    data-tooltip="Eliminar actividad"
     onClick={() => onDelete(activity.id)}
   >
     🗑️

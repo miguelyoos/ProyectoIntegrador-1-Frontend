@@ -2,12 +2,15 @@
   border: 1.5px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  transition: box-shadow 0.2s;
-  animation: fadeIn 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0);
 }
 
 .activity-card-wrapper:hover {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 4px 20px rgba(124, 90, 245, 0.15);
+  transform: translateY(-2px);
+  border-color: rgba(124, 90, 245, 0.3);
 }
 
 @keyframes fadeIn {
@@ -83,13 +86,19 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   color: var(--muted);
+  position: relative;
 }
 
 .icon-btn:hover {
   background: var(--bg);
   color: var(--text);
+  transform: scale(1.1);
+}
+
+.icon-btn:active {
+  transform: scale(0.95);
 }
 
 .icon-btn.edit:hover {
@@ -104,6 +113,31 @@
   color: #dc2626;
 }
 
+/* Tooltips para botones */
+.icon-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.icon-btn:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 .card-expand-btn {
   background: none;
   border: 1.5px solid var(--border);
@@ -114,12 +148,23 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   color: var(--muted);
   flex-shrink: 0;
+  position: relative;
 }
 
-.card-expand-btn:hover,
+.card-expand-btn:hover {
+  background: var(--purple-light);
+  border-color: #c4b5fd;
+  color: var(--purple);
+  transform: scale(1.1);
+}
+
+.card-expand-btn:active {
+  transform: scale(0.95);
+}
+
 .card-expand-btn.active {
   background: var(--purple-light);
   border-color: #c4b5fd;
@@ -127,11 +172,36 @@
 }
 
 .card-expand-btn svg {
-  transition: transform 0.22s;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-expand-btn.active svg {
   transform: rotate(180deg);
+}
+
+/* Tooltip para expand button */
+.card-expand-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.card-expand-btn:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .completed-card {
