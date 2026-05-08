@@ -56,9 +56,15 @@ export default function ActivityCard({
   try {
 
     await updateActivity(activity.id, {
-      ...activity,
-      estado: nuevoEstado,
+      titulo: activity.titulo,
+      tipo: activity.tipo,
+      materia: activity.materia,
       desc: desc,
+      fecha: activity.fecha,
+      prioridad: activity.prioridad,
+      horasEst: activity.horasEst,
+      horasComp: activity.horasComp,
+      estado: nuevoEstado,
     });
 
     toast.success("Actividad actualizada correctamente");
