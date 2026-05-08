@@ -30,6 +30,12 @@ export function formatShortDate(isoDate) {
   });
 }
 
+// Formatear horas de forma legible
+export function formatHours(hours) {
+  const num = Number(hours) || 0;
+  return num % 1 === 0 ? num.toString() : num.toFixed(1);
+}
+
 // Calcular horas totales de subtareas para una fecha específica
 export function calcularHorasSubtareasEnFecha(activities, fecha) {
   let total = 0;
