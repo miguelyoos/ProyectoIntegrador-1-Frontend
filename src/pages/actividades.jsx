@@ -9,6 +9,7 @@ import SubtaskModal from '../components/hoy/SubtaskModal';
 import ConfirmDialog from '../components/hoy/ConfirmDialog';
 import SubtaskRequest from '../components/hoy/SubtaskRequest';
 import DailyHoursProgress from '../components/hoy/DailyHoursProgress';
+import Cargando from '../components/hoy/cargando';
 import { toast } from "react-toastify";
 import './actividades.css';
 
