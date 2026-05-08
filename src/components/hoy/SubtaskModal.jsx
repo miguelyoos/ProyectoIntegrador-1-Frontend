@@ -23,6 +23,7 @@ export default function SubtaskModal({ open, parentActivity, editingSubtask, onC
   const { setError, setSuccess, clearField, clearAll, getFieldClass, getErrorMsg } = useFormValidation();
   const { activities, limiteDiario, actualizarLimite } = useActivities();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!open) return;
     clearAll(SUB_FIELDS);
@@ -36,7 +37,6 @@ export default function SubtaskModal({ open, parentActivity, editingSubtask, onC
     } else {
       setNombre(''); setFecha(''); setHoras('');
     }
-    // eslint-disable-next-line
   }, [open, editingSubtask]);
 
   function validate(fieldId, vals = {}) {
