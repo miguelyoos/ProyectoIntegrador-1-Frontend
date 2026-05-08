@@ -8,6 +8,7 @@ import ActivityModal from '../components/hoy/ActivityModal';
 import SubtaskModal from '../components/hoy/SubtaskModal';
 import ConfirmDialog from '../components/hoy/ConfirmDialog';
 import SubtaskRequest from '../components/hoy/SubtaskRequest';
+import DailyHoursProgress from '../components/hoy/DailyHoursProgress';
 import Cargando from '../components/hoy/cargando';
 import { toast } from "react-toastify";
 import './actividades.css';
@@ -201,6 +202,8 @@ export default function Actividades() {
     <>
       <main className="page-main">
         <h2 className="section-title">Mis Actividades</h2>
+
+        <DailyHoursProgress activities={activities} />
 
         {/* SCRUM-50: Mensaje de conflicto de sobrecarga */}
         {isOverloaded && !conflictDismissed && (

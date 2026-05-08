@@ -1,0 +1,113 @@
+.daily-hours-progress {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+.daily-hours-progress.excedido {
+  background: #fef2f2;
+  border-color: #fee2e2;
+}
+
+.daily-hours-progress.critico {
+  background: #fffbeb;
+  border-color: #fef3c7;
+}
+
+.daily-hours-progress.normal {
+  background: #f0fdf4;
+  border-color: #dcfce7;
+}
+
+.daily-hours-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.daily-hours-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.daily-hours-text {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.daily-hours-text strong {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.daily-hours-progress.excedido .daily-hours-text strong {
+  color: #dc2626;
+}
+
+.daily-hours-progress.critico .daily-hours-text strong {
+  color: #d97706;
+}
+
+.daily-hours-progress.normal .daily-hours-text strong {
+  color: #16a34a;
+}
+
+.daily-hours-bar-container {
+  position: relative;
+}
+
+.daily-hours-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.daily-hours-progress.excedido .daily-hours-bar {
+  background: #fecaca;
+}
+
+.daily-hours-progress.critico .daily-hours-bar {
+  background: #fed7aa;
+}
+
+.daily-hours-progress.normal .daily-hours-bar {
+  background: #bbf7d0;
+}
+
+.daily-hours-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.daily-hours-fill.normal {
+  background: #10b981;
+}
+
+.daily-hours-fill.critico {
+  background: #f59e0b;
+}
+
+.daily-hours-fill.excedido {
+  background: #ef4444;
+}
+
+.daily-hours-warning {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #fecaca;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #7f1d1d;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

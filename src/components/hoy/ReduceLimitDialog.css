@@ -1,0 +1,116 @@
+.reduce-limit-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.reduce-limit-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 32px 28px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reduce-limit-icon {
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.reduce-limit-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.reduce-limit-message {
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.reduce-limit-message strong {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.reduce-limit-message.warning {
+  color: #7f1d1d;
+}
+
+.reduce-limit-message.warning strong {
+  color: #dc2626;
+}
+
+.reduce-limit-message small {
+  color: #9ca3af;
+}
+
+.reduce-limit-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.reduce-limit-cancel-btn,
+.reduce-limit-confirm-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.reduce-limit-cancel-btn {
+  background: #f3f4f6;
+  color: #6b7280;
+  flex: 1;
+}
+
+.reduce-limit-cancel-btn:hover {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.reduce-limit-confirm-btn {
+  background: #10b981;
+  color: white;
+  flex: 1;
+}
+
+.reduce-limit-confirm-btn:hover {
+  background: #059669;
+}
+
+.reduce-limit-confirm-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
