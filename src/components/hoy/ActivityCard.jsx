@@ -1,5 +1,5 @@
 import React from 'react';
-import { PRIO_COLORS, formatDate } from '../../utils/helpers';
+import { PRIO_COLORS, formatDate, formatHours } from '../../utils/helpers';
 import { useActivities } from '../../context/ActivitiesContext';
 import SubtasksPanel from './SubtasksPanel';
 import { toast } from "react-toastify";
@@ -56,9 +56,15 @@ export default function ActivityCard({
   try {
 
     await updateActivity(activity.id, {
-      ...activity,
-      estado: nuevoEstado,
+      titulo: activity.titulo,
+      tipo: activity.tipo,
+      materia: activity.materia,
       desc: desc,
+      fecha: activity.fecha,
+      prioridad: activity.prioridad,
+      horasEst: activity.horasEst,
+      horasComp: activity.horasComp,
+      estado: nuevoEstado,
     });
 
     toast.success("Actividad actualizada correctamente");
@@ -117,7 +123,7 @@ export default function ActivityCard({
             )}
 
             <span>
-              ⏱ {activity.horasComp}/{activity.horasEst}h{" "}
+              ⏱ {formatHours(activity.horasComp)}/{formatHours(activity.horasEst)}h{" "}
               {ESTADO_ICON[activity.estado]}
             </span>
 
@@ -145,75 +151,97 @@ export default function ActivityCard({
 
         </div>
 
-        <div className="card-actions">
+      <div className="card-actions">
 
-          <button
-            className="icon-btn"
-            onClick={() => setShowUpdate(!showUpdate)}
-          >
-            📝
-          </button>
+  <button
+    className={`card-expand-btn ${
+      isExpanded ? 'active' : ''
+    }`}
+    data-tooltip="Ver subtareas"
+    onClick={() => toggleExpand(activity.id)}
+  >
+    ▼
+  </button>
 
-          <button
-            className={`card-expand-btn ${
-              isExpanded ? 'active' : ''
-            }`}
-            title="Subtareas"
-            onClick={() => toggleExpand(activity.id)}
-          >
-            ▼
-          </button>
+  <button
+    className="icon-btn edit"
+    data-tooltip="Editar actividad"
+    onClick={() => onEdit(activity.id)}
+  >
+    ✏️
+  </button>
 
-          <button
-            className="icon-btn edit"
-            onClick={() => onEdit(activity.id)}
-          >
-            ✏️
-          </button>
+  <button
+    className="icon-btn delete"
+    data-tooltip="Eliminar actividad"
+    onClick={() => onDelete(activity.id)}
+  >
+    🗑️
+  </button>
 
-          <button
-            className="icon-btn delete"
-            onClick={() => onDelete(activity.id)}
-          >
-            🗑️
-          </button>
+</div>
 
-        </div>
+</div>
 
-      </div>
+{/* SECCION DE NOTAS */}
+<div className="note-section">
 
-      {showUpdate && (
-        <div className="update-panel">
+  {/* BOTON DESPLEGABLE */}
+  <button
+    className="note-toggle"
+    onClick={() => setShowUpdate(!showUpdate)}
+  >
+    <span>📝 Editar nota</span>
+    <span>{showUpdate ? "▲" : "▼"}</span>
+  </button>
 
-          <select
-            value={nuevoEstado}
-            onChange={(e) => setNuevoEstado(e.target.value)}
-          >
-            <option value="pendiente">Pendiente</option>
-            <option value="progreso">En progreso</option>
-            <option value="completada">Completada</option>
-          </select>
+  {/* PANEL EDITAR */}
+  {showUpdate && (
+    <div className="update-panel">
 
-          <textarea
-            placeholder="Escribe una nota..."
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-          />
+      <select
+        value={nuevoEstado}
+        onChange={(e) => setNuevoEstado(e.target.value)}
+      >
+        <option value="pendiente">Pendiente</option>
+        <option value="progreso">En progreso</option>
+        <option value="completada">Completada</option>
+      </select>
 
-          <button onClick={handleUpdate}>
-            Guardar
-          </button>
+      <textarea
+        placeholder="Escribe una nota..."
+        value={desc}
+        onChange={(e) => setDesc(e.target.value)}
+      />
 
-        </div>
-      )}
+      <button onClick={handleUpdate}>
+        Guardar
+      </button>
 
     </div>
+  )}
 
-    <SubtasksPanel
-      activity={activity}
-      open={isExpanded}
-      onAddSubtask={onAddSubtask}
-      onEditSubtask={onEditSubtask}
-    />
-  </>
-)};
+   {/* VISTA SOLO LECTURA */}
+  <div className="note-preview">
+    {desc?.trim()
+      ? desc
+      : "Sin notas"}
+  </div>
+
+</div>
+
+</div> {/* ← ESTE FALTABA */}
+
+{/* PANEL SUBTAREAS */}   
+{isExpanded && (
+  <SubtasksPanel
+  activity={activity}
+  open={isExpanded}
+  onAddSubtask={onAddSubtask}
+  onEditSubtask={onEditSubtask}
+/>
+)}  
+
+</>
+);
+}

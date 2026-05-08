@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActivities } from '../context/ActivitiesContext';
-import { formatShortDate } from '../utils/helpers';
+import { formatShortDate, formatHours } from '../utils/helpers';
 import ActivityModal from '../components/hoy/ActivityModal';
 import SubtaskModal from '../components/hoy/SubtaskModal';
 import SubtaskRequest from '../components/hoy/SubtaskRequest';
@@ -65,7 +65,7 @@ function DashboardActivityItem({ activity, isExpanded, onToggle, onEdit, onDelet
         <div className="activity-info">
           <span className="activity-title">{activity.titulo}</span>
           <span className="activity-meta">
-            {activity.materia} • {activity.horasComp || 0}h/{activity.horasEst || 0}h
+            {activity.materia} • {formatHours(activity.horasComp || 0)}h/{formatHours(activity.horasEst || 0)}h
             {activity.fecha && <span className="activity-date"> • 📅 {activity.fecha}</span>}
           </span>
         </div>
@@ -350,8 +350,35 @@ export function DashboardPage() {
     const enProgreso = activities.filter(a => a.estado === 'progreso').length;
     const completadas = activities.filter(a => a.estado === 'completada').length;
 
-    const totalHoras = activities.reduce((sum, a) => sum + (a.horasEst || 0), 0);
-    const horasCompletadas = activities.reduce((sum, a) => sum + (a.horasComp || 0), 0);
+    // Calcular horas totales incluyendo subtareas
+    const totalHoras = activities.reduce((sum, a) => {
+      // Sumar horas de la actividad
+      let activityHours = a.horasEst || 0;
+      
+      // Si tiene subtareas, sumar las horas de las subtareas en lugar de la actividad
+      if (a.subtasks && a.subtasks.length > 0) {
+        const subtaskHours = a.subtasks.reduce((subSum, s) => subSum + (s.horas_estimadas || 0), 0);
+        activityHours = subtaskHours;
+      }
+      
+      return sum + activityHours;
+    }, 0);
+    
+    const horasCompletadas = activities.reduce((sum, a) => {
+      // Sumar horas completadas de la actividad
+      let completedHours = a.horasComp || 0;
+      
+      // Si tiene subtareas, sumar solo las horas de subtareas completadas
+      if (a.subtasks && a.subtasks.length > 0) {
+        const completedSubtaskHours = a.subtasks
+          .filter(s => s.done)
+          .reduce((subSum, s) => subSum + (s.horas_estimadas || 0), 0);
+        completedHours = completedSubtaskHours;
+      }
+      
+      return sum + completedHours;
+    }, 0);
+    
     const progresoGeneral = totalHoras > 0 ? Math.round((horasCompletadas / totalHoras) * 100) : 0;
 
     const totalSubtareas = activities.reduce((sum, a) => sum + (a.subtasks?.length || 0), 0);
@@ -372,7 +399,9 @@ export function DashboardPage() {
       return false;
     }).length;
 
-    // Overdue count
+    // Overdue count - NOTA: Este cálculo es incorrecto porque no cuenta subtareas vencidas
+    // Se mantiene aquí por compatibilidad pero NO se debe usar
+    // Usar groupedActivities.overdue.length en su lugar
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
@@ -423,9 +452,10 @@ export function DashboardPage() {
       }
 
       // Si tiene subtareas, crear copias de la actividad con subtareas filtradas por fecha
-      const subtareasOverdue = activity.subtasks.filter(s => s.fecha_entrega && s.fecha_entrega < todayStr);
-      const subtareasHoy = activity.subtasks.filter(s => s.fecha_entrega && s.fecha_entrega === todayStr);
-      const subtareasUpcoming = activity.subtasks.filter(s => !s.fecha_entrega || s.fecha_entrega > todayStr);
+      // Excluir subtareas completadas (done: true) del conteo
+      const subtareasOverdue = activity.subtasks.filter(s => s.fecha_entrega && s.fecha_entrega < todayStr && !s.done);
+      const subtareasHoy = activity.subtasks.filter(s => s.fecha_entrega && s.fecha_entrega === todayStr && !s.done);
+      const subtareasUpcoming = activity.subtasks.filter(s => (!s.fecha_entrega || s.fecha_entrega > todayStr) && !s.done);
 
       if (subtareasOverdue.length > 0) {
         overdue.push({ ...activity, subtasks: subtareasOverdue });
@@ -457,7 +487,35 @@ export function DashboardPage() {
   }, [activities]);
 
   // Get count for "Para hoy" from grouped activities
-  const actividadesParaHoy = groupedActivities.today.length;
+  // Contar subtareas en lugar de actividades
+  const actividadesParaHoy = useMemo(() => {
+    return groupedActivities.today.reduce((count, activity) => {
+      if (activity.subtasks && activity.subtasks.length > 0) {
+        return count + activity.subtasks.length;
+      }
+      return count + 1; // Si no tiene subtareas, contar la actividad misma
+    }, 0);
+  }, [groupedActivities.today]);
+
+  // Contar subtareas vencidas
+  const subtareasVencidas = useMemo(() => {
+    return groupedActivities.overdue.reduce((count, activity) => {
+      if (activity.subtasks && activity.subtasks.length > 0) {
+        return count + activity.subtasks.length;
+      }
+      return count + 1; // Si no tiene subtareas, contar la actividad misma
+    }, 0);
+  }, [groupedActivities.overdue]);
+
+  // Contar subtareas próximas
+  const subtareasProximas = useMemo(() => {
+    return groupedActivities.upcoming.reduce((count, activity) => {
+      if (activity.subtasks && activity.subtasks.length > 0) {
+        return count + activity.subtasks.length;
+      }
+      return count + 1; // Si no tiene subtareas, contar la actividad misma
+    }, 0);
+  }, [groupedActivities.upcoming]);
 
   const hasActivities = activities.length > 0;
   const hasPendingOrSubtasks = stats.pendientes > 0 || stats.totalSubtareas > 0;
@@ -494,7 +552,7 @@ export function DashboardPage() {
 
       {/* Daily Limit Section - Compact */}
       <section className="daily-limit-compact">        <div className="limit-compact-header">
-          <span className="limit-compact-title">Límite: {stats.horasCompletadas}h / {limiteDiario}h</span>
+          <span className="limit-compact-title">Límite: {formatHours(stats.horasCompletadas)}h / {formatHours(limiteDiario)}h</span>
           <div className="limit-compact-bar">
             <div 
               className="limit-compact-fill" 
@@ -516,7 +574,7 @@ export function DashboardPage() {
           <div className="conflict-banner__body">
             <div className="conflict-banner__title">Sobrecarga de horas detectada</div>
             <div className="conflict-banner__desc">
-              Tenés <strong>{totalHorasActivas}h</strong> estimadas en actividades activas, pero tu límite diario es <strong>{limiteDiario}h</strong>. Considerá reducir horas o completar actividades.
+              Tenés <strong>{formatHours(totalHorasActivas)}h</strong> estimadas en actividades activas, pero tu límite diario es <strong>{formatHours(limiteDiario)}h</strong>. Considerá reducir horas o completar actividades.
             </div>
           </div>
           <button className="conflict-banner__close" onClick={() => setConflictDismissed(true)} aria-label="Cerrar aviso">✕</button>
@@ -530,7 +588,7 @@ export function DashboardPage() {
           <div className="conflict-banner__body">
             <div className="conflict-banner__title">Conflicto resuelto</div>
             <div className="conflict-banner__desc">
-              Tus horas activas ({totalHorasActivas}h) ya están dentro del límite diario ({limiteDiario}h).
+              Tus horas activas ({formatHours(totalHorasActivas)}h) ya están dentro del límite diario ({formatHours(limiteDiario)}h).
             </div>
           </div>
           <button className="conflict-banner__close" onClick={() => setResolvedVisible(false)} aria-label="Cerrar aviso">✕</button>
@@ -591,7 +649,7 @@ export function DashboardPage() {
         <div className="hours-progress">
           <div className="hours-header">
             <span>Horas de trabajo</span>
-            <span>{stats.horasCompletadas}h / {stats.totalHoras}h</span>
+            <span>{formatHours(stats.horasCompletadas)}h / {formatHours(stats.totalHoras)}h</span>
           </div>
           <div className="hours-bar">
             <div 
@@ -651,7 +709,7 @@ export function DashboardPage() {
           <button className={`quick-stat-btn warning ${collapsedSections.overdue ? 'collapsed' : ''}`} onClick={() => toggleSection('overdue')}>
             <div className="quick-stat-icon">⚠️</div>
             <div className="quick-stat-content">
-              <span className="quick-stat-value">{stats.vencidas}</span>
+              <span className="quick-stat-value">{subtareasVencidas}</span>
               <span className="quick-stat-label">Vencidas</span>
             </div>
             <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -692,7 +750,7 @@ export function DashboardPage() {
           <button className={`quick-stat-btn ${collapsedSections.upcoming ? 'collapsed' : ''}`} onClick={() => toggleSection('upcoming')}>
             <div className="quick-stat-icon">📆</div>
             <div className="quick-stat-content">
-              <span className="quick-stat-value">{groupedActivities.upcoming.length}</span>
+              <span className="quick-stat-value">{subtareasProximas}</span>
               <span className="quick-stat-label">Próximas</span>
             </div>
             <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

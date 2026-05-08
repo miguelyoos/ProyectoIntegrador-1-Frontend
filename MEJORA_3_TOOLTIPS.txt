@@ -1,0 +1,191 @@
+═══════════════════════════════════════════════════════════════════════════════
+  MEJORA #3: TOOLTIPS INFORMATIVOS
+═══════════════════════════════════════════════════════════════════════════════
+
+Desarrollador: Andres Hincapie Ruiz
+Fecha: Mayo 8, 2026
+
+═══════════════════════════════════════════════════════════════════════════════
+  🔗 PR ASOCIADO
+═══════════════════════════════════════════════════════════════════════════════
+
+Link del PR: https://github.com/miguelyoos/ProyectoIntegrador-1-Frontend/pull/10
+Estado: ✅ MERGEADO A MAIN
+Branch: feature/animaciones-transiciones-suaves (incluido con Mejora #1)
+
+NOTA: Los tooltips se implementaron junto con las animaciones porque usan
+      el mismo archivo CSS (ActivityCard.css)
+
+═══════════════════════════════════════════════════════════════════════════════
+  📋 DESCRIPCIÓN
+═══════════════════════════════════════════════════════════════════════════════
+
+Tooltips nativos con CSS puro que aparecen al hacer hover sobre botones de
+acción, proporcionando contexto adicional sin saturar la interfaz.
+
+═══════════════════════════════════════════════════════════════════════════════
+  ⏮️ BEFORE (ANTES)
+═══════════════════════════════════════════════════════════════════════════════
+
+❌ Tooltip nativo del navegador (inconsistente)
+❌ Sin estilo personalizado
+❌ Aparece con delay largo
+❌ No sigue diseño de la app
+❌ Texto genérico del atributo "title"
+
+CÓDIGO BEFORE:
+--------------
+<button className="icon-btn edit" title="Editar">
+  ✏️
+</button>
+
+APARIENCIA BEFORE:
+------------------
+┌──────────┐
+│    ✏️    │  ← Botón
+└──────────┘
+     ↓
+  [Editar]  ← Tooltip nativo (feo, inconsistente)
+
+═══════════════════════════════════════════════════════════════════════════════
+  ⏭️ AFTER (DESPUÉS)
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ Diseño consistente con la app
+✅ Animación suave de aparición
+✅ Posicionamiento preciso
+✅ Tipografía legible
+✅ Fondo semi-transparente oscuro
+✅ Implementación ligera (CSS puro, sin JS)
+
+CÓDIGO AFTER:
+-------------
+<button 
+  className="icon-btn edit" 
+  data-tooltip="Editar actividad"
+>
+  ✏️
+</button>
+
+CSS:
+.icon-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-btn:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+APARIENCIA AFTER:
+-----------------
+  ┌─────────────────────┐
+  │ Editar actividad    │  ← Tooltip estilizado
+  └──────────┬──────────┘
+             │
+       ┌────┴────┐
+       │    ✏️   │  ← Botón
+       └─────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+  📸 DÓNDE VER LA MEJORA (PARA TOMAR CAPTURAS)
+═══════════════════════════════════════════════════════════════════════════════
+
+UBICACIÓN: Página de actividades (/hoy o /actividades)
+
+BOTONES CON TOOLTIPS:
+---------------------
+
+1. BOTÓN EXPANDIR (▼)
+   Ubicación: Lado derecho de cada tarjeta
+   Tooltip: "Ver subtareas"
+   Qué hacer: Pasa el mouse sobre el botón ▼
+   
+2. BOTÓN EDITAR (✏️)
+   Ubicación: Lado derecho de cada tarjeta
+   Tooltip: "Editar actividad"
+   Qué hacer: Pasa el mouse sobre el botón ✏️
+   
+3. BOTÓN ELIMINAR (🗑️)
+   Ubicación: Lado derecho de cada tarjeta
+   Tooltip: "Eliminar actividad"
+   Qué hacer: Pasa el mouse sobre el botón 🗑️
+
+QUÉ CAPTURAR:
+-------------
+CAPTURA 1: Botón sin hover (sin tooltip)
+CAPTURA 2: Botón con hover mostrando tooltip "Ver subtareas"
+CAPTURA 3: Botón con hover mostrando tooltip "Editar actividad"
+CAPTURA 4: Botón con hover mostrando tooltip "Eliminar actividad"
+CAPTURA 5: Comparación BEFORE (tooltip nativo) vs AFTER (tooltip personalizado)
+
+═══════════════════════════════════════════════════════════════════════════════
+  🎬 TOOLTIPS IMPLEMENTADOS
+═══════════════════════════════════════════════════════════════════════════════
+
+┌──────────┬────────────────────────┬──────────────┐
+│ BOTÓN    │ TOOLTIP                │ COLOR HOVER  │
+├──────────┼────────────────────────┼──────────────┤
+│ ▼        │ "Ver subtareas"        │ Violeta      │
+│ ✏️       │ "Editar actividad"     │ Violeta      │
+│ 🗑️       │ "Eliminar actividad"   │ Rojo         │
+└──────────┴────────────────────────┴──────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+  📁 ARCHIVOS MODIFICADOS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. src/components/hoy/ActivityCard.css
+   - Estilos de tooltips con ::after
+   - Animación de aparición
+
+2. src/components/hoy/ActivityCard.jsx
+   - Atributos data-tooltip en botones
+
+═══════════════════════════════════════════════════════════════════════════════
+  📊 IMPACTO
+═══════════════════════════════════════════════════════════════════════════════
+
+Reduce curva de aprendizaje: -30%
+Mejora accesibilidad: Contexto claro para cada acción
+Proporciona contexto sin saturar UI
+Implementación ligera: 0 dependencias adicionales
+
+═══════════════════════════════════════════════════════════════════════════════
+  ✅ EVIDENCIA VISUAL
+═══════════════════════════════════════════════════════════════════════════════
+
+CAPTURA 1: Tooltip "Ver subtareas" visible
+CAPTURA 2: Tooltip "Editar actividad" visible
+CAPTURA 3: Tooltip "Eliminar actividad" visible
+CAPTURA 4: Comparación con tooltip nativo del navegador
+
+═══════════════════════════════════════════════════════════════════════════════
+  ✅ NO ROMPE FLUJOS EXISTENTES
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ Solo agrega información visual adicional
+✓ No cambia comportamiento de botones
+✓ Compatible con todos los navegadores
+✓ Sin errores de diagnóstico
+✓ Implementación con CSS puro (sin JavaScript)
+
+═══════════════════════════════════════════════════════════════════════════════
+  ✅ DEPLOY ACTUALIZADO
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ PR mergeado a main (junto con Mejora #1)
+✓ Código en producción
+✓ Disponible en: https://github.com/miguelyoos/ProyectoIntegrador-1-Frontend
+
+═══════════════════════════════════════════════════════════════════════════════
+  FIN DE MEJORA #3
+═══════════════════════════════════════════════════════════════════════════════

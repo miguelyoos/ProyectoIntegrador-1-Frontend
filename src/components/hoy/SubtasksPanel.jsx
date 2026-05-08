@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { formatShortDate } from '../../utils/helpers';
+import { formatShortDate, formatHours } from '../../utils/helpers';
 import { useActivities } from '../../context/ActivitiesContext';
 import ConfirmDialog from './ConfirmDialog';
 import './SubtasksPanel.css';
@@ -56,7 +56,7 @@ export default function SubtasksPanel({ activity, open, onAddSubtask, onEditSubt
                 <span className={`subtask-name${s.done ? ' done' : ''}`}>{s.nombre}</span>
                 <span className="subtask-meta">
                   {s.fecha_entrega && <span>📅 {formatShortDate(s.fecha_entrega)}</span>}
-                  <span>⏱ {s.horas_estimadas}h</span>
+                  <span>⏱ {formatHours(s.horas_estimadas)}h</span>
                 </span>
                 <div className="subtask-actions">
                   <button
