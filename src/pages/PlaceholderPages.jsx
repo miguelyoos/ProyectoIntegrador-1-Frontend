@@ -400,6 +400,8 @@ export function DashboardPage() {
     const today = new Date();
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     
+    console.log(`📅 Fecha de hoy: ${todayStr}`);
+    
     const overdue = [];
     const todayActivities = [];
     const upcoming = [];
@@ -472,12 +474,16 @@ export function DashboardPage() {
 
   // Contar subtareas vencidas
   const subtareasVencidas = useMemo(() => {
-    return groupedActivities.overdue.reduce((count, activity) => {
+    const count = groupedActivities.overdue.reduce((count, activity) => {
       if (activity.subtasks && activity.subtasks.length > 0) {
+        console.log(`Actividad "${activity.titulo}" tiene ${activity.subtasks.length} subtareas vencidas:`, activity.subtasks.map(s => s.nombre));
         return count + activity.subtasks.length;
       }
+      console.log(`Actividad "${activity.titulo}" sin subtareas, contando como 1`);
       return count + 1; // Si no tiene subtareas, contar la actividad misma
     }, 0);
+    console.log(`Total subtareas vencidas: ${count}`);
+    return count;
   }, [groupedActivities.overdue]);
 
   // Contar subtareas próximas
