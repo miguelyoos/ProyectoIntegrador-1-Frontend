@@ -1,26 +1,17 @@
 import React, { useMemo } from 'react';
 import { useActivities } from '../../context/ActivitiesContext';
+import { calcularHorasSubtareasHoy } from '../../utils/helpers';
 import './DailyHoursProgress.css';
 
 export default function DailyHoursProgress({ activities }) {
   const { limiteDiario } = useActivities();
 
-  // Calcular horas de subtareas para hoy
+  // Usar la función del helper que ya está siendo usada en otros lugares
   const horasSubtareasHoy = useMemo(() => {
-    const hoy = new Date();
-    const todayStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
-    
-    let total = 0;
-    activities.forEach(activity => {
-      if (activity.subtasks && activity.subtasks.length > 0) {
-        activity.subtasks.forEach(subtask => {
-          if (subtask.fecha_entrega === todayStr && !subtask.done) {
-            total += Number(subtask.horas_estimadas) || 0;
-          }
-        });
-      }
-    });
-    return total;
+    if (!activities || activities.length === 0) return 0;
+    const horas = calcularHorasSubtareasHoy(activities);
+    console.log('📊 DailyHoursProgress - Actividades:', activities.length, 'Horas de hoy:', horas);
+    return horas;
   }, [activities]);
 
   const porcentaje = limiteDiario > 0 ? Math.min(100, (horasSubtareasHoy / limiteDiario) * 100) : 0;

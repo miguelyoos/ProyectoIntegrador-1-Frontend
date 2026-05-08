@@ -39,15 +39,29 @@ export function formatHours(hours) {
 // Calcular horas totales de subtareas para una fecha específica
 export function calcularHorasSubtareasEnFecha(activities, fecha) {
   let total = 0;
+  
+  if (!activities || !Array.isArray(activities)) {
+    return total;
+  }
+  
   activities.forEach(activity => {
-    if (activity.subtasks && activity.subtasks.length > 0) {
-      activity.subtasks.forEach(subtask => {
-        if (subtask.fecha_entrega === fecha && !subtask.done) {
-          total += Number(subtask.horas_estimadas) || 0;
+    // Manejar tanto 'subtasks' como 'subtareas'
+    const subtasks = activity.subtasks || activity.subtareas || [];
+    
+    if (Array.isArray(subtasks) && subtasks.length > 0) {
+      subtasks.forEach(subtask => {
+        // Comparar la fecha (manejar diferentes nombres de campo)
+        const subtaskFecha = subtask.fecha_entrega || subtask.fechaEntrega;
+        const isDone = subtask.done === true;
+        
+        if (subtaskFecha === fecha && !isDone) {
+          const horas = Number(subtask.horas_estimadas) || 0;
+          total += horas;
         }
       });
     }
   });
+  
   return total;
 }
 
@@ -66,7 +80,8 @@ export function validarExcededeLimite(activities, fechaSubtarea, horasSubtarea, 
   if (excluirSubtaskId) {
     const subtaskAnterior = activities.reduce((found, activity) => {
       if (found) return found;
-      const sub = (activity.subtasks || []).find(s => s.id === excluirSubtaskId);
+      const subtasks = activity.subtasks || activity.subtareas || [];
+      const sub = Array.isArray(subtasks) ? subtasks.find(s => s.id === excluirSubtaskId) : null;
       return sub;
     }, null);
     
