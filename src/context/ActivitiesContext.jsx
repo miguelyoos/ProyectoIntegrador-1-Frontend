@@ -363,8 +363,19 @@ export function ActivitiesProvider({ children }) {
 
   // 🔹 Toggle estado subtarea
   const toggleSubtask = async (activityId, subtaskId) => {
+    console.log("🔄 Toggle subtarea:", { activityId, subtaskId });
+    
     const activity = activities.find(a => a.id === activityId);
+    if (!activity) {
+      console.error("❌ Actividad no encontrada:", activityId);
+      return;
+    }
+    
     const sub = activity.subtasks.find(s => s.id === subtaskId);
+    if (!sub) {
+      console.error("❌ Subtarea no encontrada:", subtaskId);
+      return;
+    }
 
     if (isLocalMode) {
       setActivities((prev) => {
@@ -384,22 +395,31 @@ export function ActivitiesProvider({ children }) {
       return;
     }
 
-    const updated = await editarSubtarea(subtaskId, {
-      done: !sub.done
-    });
+    try {
+      console.log("📤 Enviando toggle para subtarea ID:", subtaskId);
+      const updated = await editarSubtarea(subtaskId, {
+        done: !sub.done
+      });
 
-    setActivities(prev =>
-      prev.map(act =>
-        act.id === activityId
-          ? {
-              ...act,
-              subtasks: act.subtasks.map(s =>
-                s.id === subtaskId ? updated : s
-              )
-            }
-          : act
-      )
-    );
+      console.log("✅ Subtarea actualizada:", updated);
+
+      setActivities(prev =>
+        prev.map(act =>
+          act.id === activityId
+            ? {
+                ...act,
+                subtasks: act.subtasks.map(s =>
+                  s.id === subtaskId ? updated : s
+                )
+              }
+            : act
+        )
+      );
+    } catch (error) {
+      console.error("❌ Error al hacer toggle de subtarea:", error);
+      console.error("Detalles:", error.response?.data);
+      throw error;
+    }
   };
 
     return (
