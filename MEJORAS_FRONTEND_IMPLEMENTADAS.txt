@@ -3,7 +3,7 @@
 ═══════════════════════════════════════════════════════════════════════════════
 
 Fecha de implementación: Mayo 8, 2026
-Desarrollador: Kiro AI Assistant
+Desarrollador: Andres Hincapie Ruiz
 Proyecto: Sistema de Gestión de Actividades Académicas
 
 ═══════════════════════════════════════════════════════════════════════════════

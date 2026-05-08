@@ -3,6 +3,7 @@
 ## 🎯 Resumen de Implementación
 
 **Fecha:** Mayo 8, 2026  
+**Desarrollador:** Andres Hincapie Ruiz  
 **Proyecto:** Sistema de Gestión de Actividades Académicas  
 **Mejoras Implementadas:** 3 mejoras profesionales de UX/UI
 
@@ -388,6 +389,6 @@ Las 3 mejoras implementadas transforman la experiencia de usuario de manera sign
 
 ---
 
-**Documentado por:** Kiro AI Assistant  
+**Documentado por:** Andres Hincapie Ruiz  
 **Fecha:** Mayo 8, 2026  
 **Versión:** 1.0

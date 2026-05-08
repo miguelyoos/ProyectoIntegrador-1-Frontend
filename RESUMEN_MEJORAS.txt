@@ -3,7 +3,7 @@
 ═══════════════════════════════════════════════════════════════════════════════
 
 📅 Fecha: Mayo 8, 2026
-👨‍💻 Desarrollador: Kiro AI Assistant
+👨‍💻 Desarrollador: Andres Hincapie Ruiz
 🎯 Objetivo: Aplicar 3 mejoras profesionales en interfaz
 
 ═══════════════════════════════════════════════════════════════════════════════
