@@ -460,7 +460,35 @@ export function DashboardPage() {
   }, [activities]);
 
   // Get count for "Para hoy" from grouped activities
-  const actividadesParaHoy = groupedActivities.today.length;
+  // Contar subtareas en lugar de actividades
+  const actividadesParaHoy = useMemo(() => {
+    return groupedActivities.today.reduce((count, activity) => {
+      if (activity.subtasks && activity.subtasks.length > 0) {
+        return count + activity.subtasks.length;
+      }
+      return count + 1; // Si no tiene subtareas, contar la actividad misma
+    }, 0);
+  }, [groupedActivities.today]);
+
+  // Contar subtareas vencidas
+  const subtareasVencidas = useMemo(() => {
+    return groupedActivities.overdue.reduce((count, activity) => {
+      if (activity.subtasks && activity.subtasks.length > 0) {
+        return count + activity.subtasks.length;
+      }
+      return count + 1; // Si no tiene subtareas, contar la actividad misma
+    }, 0);
+  }, [groupedActivities.overdue]);
+
+  // Contar subtareas próximas
+  const subtareasProximas = useMemo(() => {
+    return groupedActivities.upcoming.reduce((count, activity) => {
+      if (activity.subtasks && activity.subtasks.length > 0) {
+        return count + activity.subtasks.length;
+      }
+      return count + 1; // Si no tiene subtareas, contar la actividad misma
+    }, 0);
+  }, [groupedActivities.upcoming]);
 
   const hasActivities = activities.length > 0;
   const hasPendingOrSubtasks = stats.pendientes > 0 || stats.totalSubtareas > 0;
@@ -654,7 +682,7 @@ export function DashboardPage() {
           <button className={`quick-stat-btn warning ${collapsedSections.overdue ? 'collapsed' : ''}`} onClick={() => toggleSection('overdue')}>
             <div className="quick-stat-icon">⚠️</div>
             <div className="quick-stat-content">
-              <span className="quick-stat-value">{groupedActivities.overdue.length}</span>
+              <span className="quick-stat-value">{subtareasVencidas}</span>
               <span className="quick-stat-label">Vencidas</span>
             </div>
             <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -695,7 +723,7 @@ export function DashboardPage() {
           <button className={`quick-stat-btn ${collapsedSections.upcoming ? 'collapsed' : ''}`} onClick={() => toggleSection('upcoming')}>
             <div className="quick-stat-icon">📆</div>
             <div className="quick-stat-content">
-              <span className="quick-stat-value">{groupedActivities.upcoming.length}</span>
+              <span className="quick-stat-value">{subtareasProximas}</span>
               <span className="quick-stat-label">Próximas</span>
             </div>
             <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
