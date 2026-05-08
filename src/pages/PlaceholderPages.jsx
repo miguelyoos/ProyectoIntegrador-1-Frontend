@@ -350,8 +350,35 @@ export function DashboardPage() {
     const enProgreso = activities.filter(a => a.estado === 'progreso').length;
     const completadas = activities.filter(a => a.estado === 'completada').length;
 
-    const totalHoras = activities.reduce((sum, a) => sum + (a.horasEst || 0), 0);
-    const horasCompletadas = activities.reduce((sum, a) => sum + (a.horasComp || 0), 0);
+    // Calcular horas totales incluyendo subtareas
+    const totalHoras = activities.reduce((sum, a) => {
+      // Sumar horas de la actividad
+      let activityHours = a.horasEst || 0;
+      
+      // Si tiene subtareas, sumar las horas de las subtareas en lugar de la actividad
+      if (a.subtasks && a.subtasks.length > 0) {
+        const subtaskHours = a.subtasks.reduce((subSum, s) => subSum + (s.horas_estimadas || 0), 0);
+        activityHours = subtaskHours;
+      }
+      
+      return sum + activityHours;
+    }, 0);
+    
+    const horasCompletadas = activities.reduce((sum, a) => {
+      // Sumar horas completadas de la actividad
+      let completedHours = a.horasComp || 0;
+      
+      // Si tiene subtareas, sumar solo las horas de subtareas completadas
+      if (a.subtasks && a.subtasks.length > 0) {
+        const completedSubtaskHours = a.subtasks
+          .filter(s => s.done)
+          .reduce((subSum, s) => subSum + (s.horas_estimadas || 0), 0);
+        completedHours = completedSubtaskHours;
+      }
+      
+      return sum + completedHours;
+    }, 0);
+    
     const progresoGeneral = totalHoras > 0 ? Math.round((horasCompletadas / totalHoras) * 100) : 0;
 
     const totalSubtareas = activities.reduce((sum, a) => sum + (a.subtasks?.length || 0), 0);
@@ -399,8 +426,6 @@ export function DashboardPage() {
   const groupedActivities = useMemo(() => {
     const today = new Date();
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    
-    console.log(`📅 Fecha de hoy: ${todayStr}`);
     
     const overdue = [];
     const todayActivities = [];
@@ -474,16 +499,12 @@ export function DashboardPage() {
 
   // Contar subtareas vencidas
   const subtareasVencidas = useMemo(() => {
-    const count = groupedActivities.overdue.reduce((count, activity) => {
+    return groupedActivities.overdue.reduce((count, activity) => {
       if (activity.subtasks && activity.subtasks.length > 0) {
-        console.log(`Actividad "${activity.titulo}" tiene ${activity.subtasks.length} subtareas vencidas:`, activity.subtasks.map(s => s.nombre));
         return count + activity.subtasks.length;
       }
-      console.log(`Actividad "${activity.titulo}" sin subtareas, contando como 1`);
       return count + 1; // Si no tiene subtareas, contar la actividad misma
     }, 0);
-    console.log(`Total subtareas vencidas: ${count}`);
-    return count;
   }, [groupedActivities.overdue]);
 
   // Contar subtareas próximas
