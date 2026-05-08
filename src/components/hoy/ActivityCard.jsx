@@ -1,5 +1,5 @@
 import React from 'react';
-import { PRIO_COLORS, formatDate } from '../../utils/helpers';
+import { PRIO_COLORS, formatDate, formatHours } from '../../utils/helpers';
 import { useActivities } from '../../context/ActivitiesContext';
 import SubtasksPanel from './SubtasksPanel';
 import { toast } from "react-toastify";
@@ -123,7 +123,7 @@ export default function ActivityCard({
             )}
 
             <span>
-              ⏱ {activity.horasComp}/{activity.horasEst}h{" "}
+              ⏱ {formatHours(activity.horasComp)}/{formatHours(activity.horasEst)}h{" "}
               {ESTADO_ICON[activity.estado]}
             </span>
 

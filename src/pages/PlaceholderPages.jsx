@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActivities } from '../context/ActivitiesContext';
-import { formatShortDate } from '../utils/helpers';
+import { formatShortDate, formatHours } from '../utils/helpers';
 import ActivityModal from '../components/hoy/ActivityModal';
 import SubtaskModal from '../components/hoy/SubtaskModal';
 import SubtaskRequest from '../components/hoy/SubtaskRequest';
@@ -65,7 +65,7 @@ function DashboardActivityItem({ activity, isExpanded, onToggle, onEdit, onDelet
         <div className="activity-info">
           <span className="activity-title">{activity.titulo}</span>
           <span className="activity-meta">
-            {activity.materia} • {activity.horasComp || 0}h/{activity.horasEst || 0}h
+            {activity.materia} • {formatHours(activity.horasComp || 0)}h/{formatHours(activity.horasEst || 0)}h
             {activity.fecha && <span className="activity-date"> • 📅 {activity.fecha}</span>}
           </span>
         </div>
@@ -552,7 +552,7 @@ export function DashboardPage() {
 
       {/* Daily Limit Section - Compact */}
       <section className="daily-limit-compact">        <div className="limit-compact-header">
-          <span className="limit-compact-title">Límite: {stats.horasCompletadas}h / {limiteDiario}h</span>
+          <span className="limit-compact-title">Límite: {formatHours(stats.horasCompletadas)}h / {formatHours(limiteDiario)}h</span>
           <div className="limit-compact-bar">
             <div 
               className="limit-compact-fill" 
@@ -574,7 +574,7 @@ export function DashboardPage() {
           <div className="conflict-banner__body">
             <div className="conflict-banner__title">Sobrecarga de horas detectada</div>
             <div className="conflict-banner__desc">
-              Tenés <strong>{totalHorasActivas}h</strong> estimadas en actividades activas, pero tu límite diario es <strong>{limiteDiario}h</strong>. Considerá reducir horas o completar actividades.
+              Tenés <strong>{formatHours(totalHorasActivas)}h</strong> estimadas en actividades activas, pero tu límite diario es <strong>{formatHours(limiteDiario)}h</strong>. Considerá reducir horas o completar actividades.
             </div>
           </div>
           <button className="conflict-banner__close" onClick={() => setConflictDismissed(true)} aria-label="Cerrar aviso">✕</button>
@@ -588,7 +588,7 @@ export function DashboardPage() {
           <div className="conflict-banner__body">
             <div className="conflict-banner__title">Conflicto resuelto</div>
             <div className="conflict-banner__desc">
-              Tus horas activas ({totalHorasActivas}h) ya están dentro del límite diario ({limiteDiario}h).
+              Tus horas activas ({formatHours(totalHorasActivas)}h) ya están dentro del límite diario ({formatHours(limiteDiario)}h).
             </div>
           </div>
           <button className="conflict-banner__close" onClick={() => setResolvedVisible(false)} aria-label="Cerrar aviso">✕</button>
@@ -649,7 +649,7 @@ export function DashboardPage() {
         <div className="hours-progress">
           <div className="hours-header">
             <span>Horas de trabajo</span>
-            <span>{stats.horasCompletadas}h / {stats.totalHoras}h</span>
+            <span>{formatHours(stats.horasCompletadas)}h / {formatHours(stats.totalHoras)}h</span>
           </div>
           <div className="hours-bar">
             <div 

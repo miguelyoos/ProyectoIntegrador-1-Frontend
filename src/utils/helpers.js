@@ -29,3 +29,12 @@ export function formatShortDate(isoDate) {
     month: 'short',
   });
 }
+
+export function formatHours(hours) {
+  if (hours === null || hours === undefined) return '0';
+  const num = Number(hours);
+  // Si es un número entero, mostrarlo sin decimales
+  if (Number.isInteger(num)) return num.toString();
+  // Si tiene decimales, mostrar máximo 1 decimal
+  return num.toFixed(1).replace(/\.0$/, '');
+}
