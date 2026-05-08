@@ -227,11 +227,11 @@ export default function ActivityCard({
 {/* PANEL SUBTAREAS */}   
 {isExpanded && (
   <SubtasksPanel
-    subtasks={subs}   
-    activityId={activity.id}  
-    onAddSubtask={onAddSubtask}
-    onEditSubtask={onEditSubtask}
-  />
+  activity={activity}
+  open={isExpanded}
+  onAddSubtask={onAddSubtask}
+  onEditSubtask={onEditSubtask}
+/>
 )}  
 
 </>
