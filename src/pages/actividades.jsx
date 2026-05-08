@@ -200,8 +200,8 @@ export default function Actividades() {
 
   return (
     <>
-      <main className="page-main">
-        <h2 className="section-title">Mis Actividades</h2>
+      <main className="page-main" aria-labelledby="page-actividades-title">
+        <h2 className="section-title" id="page-actividades-title">Mis Actividades</h2>
 
         <DailyHoursProgress activities={activities} />
 
@@ -268,7 +268,7 @@ export default function Actividades() {
         )}
       </main>
 
-      <button className="fab" title="Nueva actividad" onClick={openNewActivity}>
+      <button className="fab" title="Nueva actividad" aria-label="Nueva actividad" onClick={openNewActivity}>
         <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5">
           <line x1="12" y1="5" x2="12" y2="19" />
           <line x1="5" y1="12" x2="19" y2="12" />

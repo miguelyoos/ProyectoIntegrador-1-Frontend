@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActivities } from '../../context/ActivitiesContext';
 import LimitDailyHoursButton from './LimitDailyHoursButton';
@@ -9,6 +9,7 @@ export default function Header() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { activities } = useActivities();
   const navigate = useNavigate();
+  const cancelLogoutRef = useRef(null);
 
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
@@ -30,6 +31,21 @@ export default function Header() {
   const handleLogoutCancel = () => {
     setShowLogoutModal(false);
   };
+
+  useEffect(() => {
+    if (!showLogoutModal) return;
+
+    cancelLogoutRef.current?.focus();
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        setShowLogoutModal(false);
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showLogoutModal]);
 
   return (
     <>
@@ -65,7 +81,7 @@ export default function Header() {
 
       {showLogoutModal && (
         <div className="logout-overlay" onClick={handleLogoutCancel}>
-          <div className="logout-modal" onClick={e => e.stopPropagation()}>
+          <div className="logout-modal" role="dialog" aria-modal="true" aria-labelledby="logout-title" onClick={e => e.stopPropagation()}>
             <div className="logout-icon">
               <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -73,10 +89,10 @@ export default function Header() {
                 <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
             </div>
-            <h2>¿Cerrar sesión?</h2>
+            <h2 id="logout-title">¿Cerrar sesión?</h2>
             <p>¿Estás seguro de que quieres salir? Tendrás que volver a iniciar sesión.</p>
             <div className="logout-actions">
-              <button className="btn-cancel-logout" onClick={handleLogoutCancel}>
+              <button className="btn-cancel-logout" onClick={handleLogoutCancel} ref={cancelLogoutRef}>
                 Cancelar
               </button>
               <button className="btn-confirm-logout" onClick={handleLogoutConfirm}>

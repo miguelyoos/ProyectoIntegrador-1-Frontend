@@ -37,6 +37,7 @@ export default function ActivityModal({ open, editingActivity, onClose, onSave, 
   const [bannerMsg, setBannerMsg] = useState('');
   const [shaking, setShaking] = useState(false);
   const modalRef = useRef(null);
+  const firstInputRef = useRef(null);
 
   const { setError, setSuccess, clearField, clearAll, getFieldClass, getErrorMsg } = useFormValidation();
 
@@ -59,6 +60,21 @@ export default function ActivityModal({ open, editingActivity, onClose, onSave, 
     }
     // eslint-disable-next-line
   }, [open, editingActivity]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    firstInputRef.current?.focus();
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [open, onClose]);
 
   function validate(fieldId, vals = {}) {
     const t = vals.titulo ?? titulo;
@@ -152,9 +168,9 @@ export default function ActivityModal({ open, editingActivity, onClose, onSave, 
   }
 
   return (
-    <div className={`overlay${open ? ' open' : ''}`} onClick={handleOverlayClick}>
-      <div className={`modal${shaking ? ' shake' : ''}`} ref={modalRef}>
-        <h2>{editingActivity ? 'Editar actividad' : 'Nueva actividad evaluativa'}</h2>
+    <div className={`overlay${open ? ' open' : ''}`} onClick={handleOverlayClick} aria-hidden={!open}>
+      <div className={`modal${shaking ? ' shake' : ''}`} ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="activity-modal-title">
+        <h2 id="activity-modal-title">{editingActivity ? 'Editar actividad' : 'Nueva actividad evaluativa'}</h2>
 
         {bannerMsg && <div className="form-error-banner show">{bannerMsg}</div>}
 
@@ -163,6 +179,7 @@ export default function ActivityModal({ open, editingActivity, onClose, onSave, 
           <input
             type="text"
             id="f-titulo"
+            ref={firstInputRef}
             placeholder="Ej: Examen de Matemáticas, Taller de Geometría"
             value={titulo}
             onChange={e => { setTitulo(e.target.value); clearField('field-titulo'); }}

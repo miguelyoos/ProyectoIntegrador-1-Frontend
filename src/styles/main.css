@@ -29,6 +29,15 @@ body {
   color: var(--text);
 }
 
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(124, 90, 245, 0.35);
+  outline-offset: 2px;
+}
+
 /* Shared form elements */
 input[type="text"],
 input[type="date"],

@@ -6,6 +6,7 @@ import Actividades from "../pages/actividades";
 import { DashboardPage, CalendarioPage } from '../pages/PlaceholderPages';
 import ProtectedRoute from "../routes/ProtectedRoute";
 import Layout from "../components/layout/Layout";
+import KeyboardVoiceAnnouncer from '../components/accessibility/KeyboardVoiceAnnouncer';
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 export default function App() {
   return (
     <BrowserRouter>
+      <KeyboardVoiceAnnouncer />
 
       {/* TOAST AQUI */}
       <ToastContainer

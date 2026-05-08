@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import './ReduceLimitDialog.css';
 
 export default function ReduceLimitDialog({
@@ -9,18 +9,35 @@ export default function ReduceLimitDialog({
   onConfirm,
   onCancel
 }) {
+  const cancelButtonRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    cancelButtonRef.current?.focus();
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        onCancel();
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [open, onCancel]);
+
   if (!open) return null;
 
   const hasConflict = totalHoursScheduled >= currentLimit;
 
   return (
     <div className="reduce-limit-overlay" onClick={onCancel}>
-      <div className="reduce-limit-modal" onClick={e => e.stopPropagation()}>
+      <div className="reduce-limit-modal" role="dialog" aria-modal="true" aria-labelledby="reduce-limit-title" onClick={e => e.stopPropagation()}>
         <div className="reduce-limit-icon">
           {hasConflict ? '⚠️' : '✓'}
         </div>
         
-        <h2 className="reduce-limit-title">
+        <h2 className="reduce-limit-title" id="reduce-limit-title">
           {hasConflict ? 'Conflicto detectado' : 'Reducir límite diario'}
         </h2>
         
@@ -44,6 +61,7 @@ export default function ReduceLimitDialog({
           <button
             className="reduce-limit-cancel-btn"
             onClick={onCancel}
+            ref={cancelButtonRef}
           >
             Cancelar
           </button>
