@@ -5,6 +5,7 @@ export const obtenerActividades = async () => {
   console.log("🔍 Actividad del backend:", response.data);
   return response.data;
 };
+
 export const crearActividad = async (actividad) => {
   console.log("📤 Enviando al backend:", actividad);
   const response = await api.post("/actividades/", actividad);
@@ -23,13 +24,17 @@ export const actualizarActividad = async (id, cambios) => {
     prioridad: cambios.prioridad,
     horasEst: cambios.horasEst,
     horasComp: cambios.horasComp,
-    // No enviar 'estado' - el backend lo calcula
   };
   
-  console.log("📤 Actualizando actividad:", id, datosParaBackend);
-  const response = await api.put(`/actividades/${id}/`, datosParaBackend);
-  console.log("📥 Respuesta del backend:", response.data);
-  return response.data;
+  try {
+    console.log("📤 Actualizando actividad:", id, datosParaBackend);
+    const response = await api.patch(`/actividades/${id}/`, datosParaBackend);
+    console.log("📥 Respuesta del backend:", response.data);
+    return response.data;
+  } catch (error) {
+    console.log("❌ Error backend:", error.response?.data);
+    throw error;
+  }
 };
 
 export const eliminarActividad = async (id) => {
