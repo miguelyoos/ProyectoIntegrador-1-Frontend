@@ -145,75 +145,95 @@ export default function ActivityCard({
 
         </div>
 
-        <div className="card-actions">
+      <div className="card-actions">
 
-          <button
-            className="icon-btn"
-            onClick={() => setShowUpdate(!showUpdate)}
-          >
-            📝
-          </button>
+  <button
+    className={`card-expand-btn ${
+      isExpanded ? 'active' : ''
+    }`}
+    title="Subtareas"
+    onClick={() => toggleExpand(activity.id)}
+  >
+    ▼
+  </button>
 
-          <button
-            className={`card-expand-btn ${
-              isExpanded ? 'active' : ''
-            }`}
-            title="Subtareas"
-            onClick={() => toggleExpand(activity.id)}
-          >
-            ▼
-          </button>
+  <button
+    className="icon-btn edit"
+    onClick={() => onEdit(activity.id)}
+  >
+    ✏️
+  </button>
 
-          <button
-            className="icon-btn edit"
-            onClick={() => onEdit(activity.id)}
-          >
-            ✏️
-          </button>
+  <button
+    className="icon-btn delete"
+    onClick={() => onDelete(activity.id)}
+  >
+    🗑️
+  </button>
 
-          <button
-            className="icon-btn delete"
-            onClick={() => onDelete(activity.id)}
-          >
-            🗑️
-          </button>
+</div>
 
-        </div>
+</div>
 
-      </div>
+{/* SECCION DE NOTAS */}
+<div className="note-section">
 
-      {showUpdate && (
-        <div className="update-panel">
+  {/* BOTON DESPLEGABLE */}
+  <button
+    className="note-toggle"
+    onClick={() => setShowUpdate(!showUpdate)}
+  >
+    <span>📝 Editar nota</span>
+    <span>{showUpdate ? "▲" : "▼"}</span>
+  </button>
 
-          <select
-            value={nuevoEstado}
-            onChange={(e) => setNuevoEstado(e.target.value)}
-          >
-            <option value="pendiente">Pendiente</option>
-            <option value="progreso">En progreso</option>
-            <option value="completada">Completada</option>
-          </select>
+  {/* PANEL EDITAR */}
+  {showUpdate && (
+    <div className="update-panel">
 
-          <textarea
-            placeholder="Escribe una nota..."
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-          />
+      <select
+        value={nuevoEstado}
+        onChange={(e) => setNuevoEstado(e.target.value)}
+      >
+        <option value="pendiente">Pendiente</option>
+        <option value="progreso">En progreso</option>
+        <option value="completada">Completada</option>
+      </select>
 
-          <button onClick={handleUpdate}>
-            Guardar
-          </button>
+      <textarea
+        placeholder="Escribe una nota..."
+        value={desc}
+        onChange={(e) => setDesc(e.target.value)}
+      />
 
-        </div>
-      )}
+      <button onClick={handleUpdate}>
+        Guardar
+      </button>
 
     </div>
+  )}
 
-    <SubtasksPanel
-      activity={activity}
-      open={isExpanded}
-      onAddSubtask={onAddSubtask}
-      onEditSubtask={onEditSubtask}
-    />
-  </>
-)};
+   {/* VISTA SOLO LECTURA */}
+  <div className="note-preview">
+    {desc?.trim()
+      ? desc
+      : "Sin notas"}
+  </div>
+
+</div>
+
+</div> {/* ← ESTE FALTABA */}
+
+{/* PANEL SUBTAREAS */}   
+{isExpanded && (
+  <SubtasksPanel
+  activity={activity}
+  open={isExpanded}
+  onAddSubtask={onAddSubtask}
+  onEditSubtask={onEditSubtask}
+/>
+)}  
+
+</>
+);
+}
