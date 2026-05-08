@@ -372,7 +372,9 @@ export function DashboardPage() {
       return false;
     }).length;
 
-    // Overdue count
+    // Overdue count - NOTA: Este cálculo es incorrecto porque no cuenta subtareas vencidas
+    // Se mantiene aquí por compatibilidad pero NO se debe usar
+    // Usar groupedActivities.overdue.length en su lugar
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
@@ -423,9 +425,10 @@ export function DashboardPage() {
       }
 
       // Si tiene subtareas, crear copias de la actividad con subtareas filtradas por fecha
-      const subtareasOverdue = activity.subtasks.filter(s => s.fecha_entrega && s.fecha_entrega < todayStr);
-      const subtareasHoy = activity.subtasks.filter(s => s.fecha_entrega && s.fecha_entrega === todayStr);
-      const subtareasUpcoming = activity.subtasks.filter(s => !s.fecha_entrega || s.fecha_entrega > todayStr);
+      // Excluir subtareas completadas (done: true) del conteo
+      const subtareasOverdue = activity.subtasks.filter(s => s.fecha_entrega && s.fecha_entrega < todayStr && !s.done);
+      const subtareasHoy = activity.subtasks.filter(s => s.fecha_entrega && s.fecha_entrega === todayStr && !s.done);
+      const subtareasUpcoming = activity.subtasks.filter(s => (!s.fecha_entrega || s.fecha_entrega > todayStr) && !s.done);
 
       if (subtareasOverdue.length > 0) {
         overdue.push({ ...activity, subtasks: subtareasOverdue });
@@ -651,7 +654,7 @@ export function DashboardPage() {
           <button className={`quick-stat-btn warning ${collapsedSections.overdue ? 'collapsed' : ''}`} onClick={() => toggleSection('overdue')}>
             <div className="quick-stat-icon">⚠️</div>
             <div className="quick-stat-content">
-              <span className="quick-stat-value">{stats.vencidas}</span>
+              <span className="quick-stat-value">{groupedActivities.overdue.length}</span>
               <span className="quick-stat-label">Vencidas</span>
             </div>
             <svg className="stat-collapse-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
