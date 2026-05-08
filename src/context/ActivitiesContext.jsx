@@ -66,6 +66,7 @@ export function ActivitiesProvider({ children }) {
   const [expandedCards, setExpandedCards] = useState(new Set());
   const [isLocalMode, setIsLocalMode] = useState(false);
   const [limiteDiario, setLimiteDiario] = useState(6); // Valor por defecto: 6 horas
+  const [loading, setLoading] = useState(true); // Estado de carga
 
   // 🔹 Cargar actividades y su límite diario
   useEffect(() => {
@@ -73,6 +74,8 @@ export function ActivitiesProvider({ children }) {
 
     async function cargarDatos() {
       console.log("🔍 Cargando actividades...");
+      setLoading(true); // Iniciar carga
+      
       try {
         // Cargar perfil para obtener límite diario
         try {
@@ -111,6 +114,10 @@ export function ActivitiesProvider({ children }) {
           }
           // Límite por defecto en modo local
           setLimiteDiario(6);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false); // Finalizar carga
         }
       }
     }
@@ -401,6 +408,7 @@ export function ActivitiesProvider({ children }) {
         activities,
         expandedCards,
         limiteDiario,
+        loading, // Exportar estado de carga
         addActivity,
         updateActivity,
         deleteActivity,
