@@ -30,7 +30,7 @@
   right: 32px;
   width: 56px;
   height: 56px;
-  background: var(--purple);
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
   color: white;
   border: none;
   border-radius: 50%;
@@ -39,15 +39,120 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+  animation: fabEntrance 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .fab:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 28px rgba(124, 90, 245, 0.55);
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 8px 32px rgba(124, 90, 245, 0.6);
 }
 
 .fab:active {
-  transform: scale(0.96);
+  transform: scale(0.95) rotate(90deg);
 }
 
+@keyframes fabEntrance {
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+
+/* Conflict Banner Styles */
+.conflict-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+.conflict-banner.resolved {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.conflict-banner__icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.conflict-banner__body {
+  flex: 1;
+}
+
+.conflict-banner__title {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+  color: #92400e;
+}
+
+.conflict-banner.resolved .conflict-banner__title {
+  color: #065f46;
+}
+
+.conflict-banner__desc {
+  font-size: 13px;
+  color: #78350f;
+  line-height: 1.5;
+}
+
+.conflict-banner.resolved .conflict-banner__desc {
+  color: #047857;
+}
+
+.conflict-banner__close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #92400e;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.conflict-banner.resolved .conflict-banner__close {
+  color: #065f46;
+}
+
+.conflict-banner__close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}

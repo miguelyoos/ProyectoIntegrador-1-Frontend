@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import './actividades.css';
 
 export default function Actividades() {
-  const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask, toggleExpand, limiteDiario } = useActivities();
+  const { activities, addActivity, updateActivity, deleteActivity, addSubtask, updateSubtask, toggleExpand, limiteDiario, loading } = useActivities();
 
   // Conflict banner state
   const [conflictDismissed, setConflictDismissed] = useState(false);
@@ -245,22 +245,26 @@ export default function Actividades() {
 
         <StatusTabs current={status} counts={counts} onChange={setStatus} />
 
-        <div className="activity-list">
-          {filtered.length === 0 ? (
-            <div className="empty-state">No hay actividades que coincidan con los filtros</div>
-          ) : (
-            filtered.map(a => (
-              <ActivityCard
-                key={a.id}
-                activity={a}
-                onEdit={openEditActivity}
-                onDelete={askDelete}
-                onAddSubtask={openAddSubtask}
-                onEditSubtask={openEditSubtask}
-              />
-            ))
-          )}
-        </div>
+        {loading ? (
+          <Cargando />
+        ) : (
+          <div className="activity-list">
+            {filtered.length === 0 ? (
+              <div className="empty-state">No hay actividades que coincidan con los filtros</div>
+            ) : (
+              filtered.map(a => (
+                <ActivityCard
+                  key={a.id}
+                  activity={a}
+                  onEdit={openEditActivity}
+                  onDelete={askDelete}
+                  onAddSubtask={openAddSubtask}
+                  onEditSubtask={openEditSubtask}
+                />
+              ))
+            )}
+          </div>
+        )}
       </main>
 
       <button className="fab" title="Nueva actividad" onClick={openNewActivity}>

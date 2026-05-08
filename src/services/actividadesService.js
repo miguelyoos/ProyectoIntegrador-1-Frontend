@@ -14,7 +14,7 @@ export const crearActividad = async (actividad) => {
 };
 
 export const actualizarActividad = async (id, cambios) => {
-  // Preparar datos para el backend - remover campos calculados
+  // Preparar datos para el backend - remover campos calculados y asegurar tipos correctos
   const datosParaBackend = {
     titulo: cambios.titulo,
     tipo: cambios.tipo,
@@ -22,9 +22,21 @@ export const actualizarActividad = async (id, cambios) => {
     desc: cambios.desc || '',
     fecha: cambios.fecha,
     prioridad: cambios.prioridad,
-    horasEst: cambios.horasEst,
-    horasComp: cambios.horasComp,
+    horasEst: Number(cambios.horasEst) || 0,
+    horasComp: Number(cambios.horasComp) || 0,
   };
+  
+  // Asegurar que no se envíen campos no válidos
+  Object.keys(datosParaBackend).forEach(key => {
+    if (datosParaBackend[key] === undefined || datosParaBackend[key] === null) {
+      delete datosParaBackend[key];
+    }
+    // Verificar que horasEst y horasComp sean números
+    if ((key === 'horasEst' || key === 'horasComp') && typeof datosParaBackend[key] !== 'number') {
+      console.error(`❌ ${key} no es un número:`, datosParaBackend[key]);
+      datosParaBackend[key] = 0;
+    }
+  });
   
   try {
     console.log("📤 Actualizando actividad:", id, datosParaBackend);

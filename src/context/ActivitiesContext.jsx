@@ -66,6 +66,7 @@ export function ActivitiesProvider({ children }) {
   const [expandedCards, setExpandedCards] = useState(new Set());
   const [isLocalMode, setIsLocalMode] = useState(false);
   const [limiteDiario, setLimiteDiario] = useState(6); // Valor por defecto: 6 horas
+  const [loading, setLoading] = useState(true); // Estado de carga
 
   // 🔹 Cargar actividades y su límite diario
   useEffect(() => {
@@ -73,6 +74,8 @@ export function ActivitiesProvider({ children }) {
 
     async function cargarDatos() {
       console.log("🔍 Cargando actividades...");
+      setLoading(true); // Iniciar carga
+      
       try {
         // Cargar perfil para obtener límite diario
         try {
@@ -111,6 +114,10 @@ export function ActivitiesProvider({ children }) {
           }
           // Límite por defecto en modo local
           setLimiteDiario(6);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false); // Finalizar carga
         }
       }
     }
@@ -356,8 +363,19 @@ export function ActivitiesProvider({ children }) {
 
   // 🔹 Toggle estado subtarea
   const toggleSubtask = async (activityId, subtaskId) => {
+    console.log("🔄 Toggle subtarea:", { activityId, subtaskId });
+    
     const activity = activities.find(a => a.id === activityId);
+    if (!activity) {
+      console.error("❌ Actividad no encontrada:", activityId);
+      return;
+    }
+    
     const sub = activity.subtasks.find(s => s.id === subtaskId);
+    if (!sub) {
+      console.error("❌ Subtarea no encontrada:", subtaskId);
+      return;
+    }
 
     if (isLocalMode) {
       setActivities((prev) => {
@@ -377,22 +395,31 @@ export function ActivitiesProvider({ children }) {
       return;
     }
 
-    const updated = await editarSubtarea(subtaskId, {
-      done: !sub.done
-    });
+    try {
+      console.log("📤 Enviando toggle para subtarea ID:", subtaskId);
+      const updated = await editarSubtarea(subtaskId, {
+        done: !sub.done
+      });
 
-    setActivities(prev =>
-      prev.map(act =>
-        act.id === activityId
-          ? {
-              ...act,
-              subtasks: act.subtasks.map(s =>
-                s.id === subtaskId ? updated : s
-              )
-            }
-          : act
-      )
-    );
+      console.log("✅ Subtarea actualizada:", updated);
+
+      setActivities(prev =>
+        prev.map(act =>
+          act.id === activityId
+            ? {
+                ...act,
+                subtasks: act.subtasks.map(s =>
+                  s.id === subtaskId ? updated : s
+                )
+              }
+            : act
+        )
+      );
+    } catch (error) {
+      console.error("❌ Error al hacer toggle de subtarea:", error);
+      console.error("Detalles:", error.response?.data);
+      throw error;
+    }
   };
 
     return (
@@ -401,6 +428,7 @@ export function ActivitiesProvider({ children }) {
         activities,
         expandedCards,
         limiteDiario,
+        loading, // Exportar estado de carga
         addActivity,
         updateActivity,
         deleteActivity,
