@@ -29,3 +29,50 @@ export function formatShortDate(isoDate) {
     month: 'short',
   });
 }
+
+// Calcular horas totales de subtareas para una fecha específica
+export function calcularHorasSubtareasEnFecha(activities, fecha) {
+  let total = 0;
+  activities.forEach(activity => {
+    if (activity.subtasks && activity.subtasks.length > 0) {
+      activity.subtasks.forEach(subtask => {
+        if (subtask.fecha_entrega === fecha && !subtask.done) {
+          total += Number(subtask.horas_estimadas) || 0;
+        }
+      });
+    }
+  });
+  return total;
+}
+
+// Calcular horas totales de subtareas para hoy
+export function calcularHorasSubtareasHoy(activities) {
+  const hoy = new Date();
+  const todayStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+  return calcularHorasSubtareasEnFecha(activities, todayStr);
+}
+
+// Validar si una subtarea excede el límite diario
+export function validarExcededeLimite(activities, fechaSubtarea, horasSubtarea, limiteDiario, excluirSubtaskId = null) {
+  let horasActuales = calcularHorasSubtareasEnFecha(activities, fechaSubtarea);
+  
+  // Si estamos editando, restar las horas de la subtarea anterior
+  if (excluirSubtaskId) {
+    const subtaskAnterior = activities.reduce((found, activity) => {
+      if (found) return found;
+      const sub = (activity.subtasks || []).find(s => s.id === excluirSubtaskId);
+      return sub;
+    }, null);
+    
+    if (subtaskAnterior) {
+      horasActuales -= Number(subtaskAnterior.horas_estimadas) || 0;
+    }
+  }
+  
+  const totalConNueva = horasActuales + horasSubtarea;
+  return {
+    excede: totalConNueva > limiteDiario,
+    totalHoras: totalConNueva,
+    horasActuales
+  };
+}

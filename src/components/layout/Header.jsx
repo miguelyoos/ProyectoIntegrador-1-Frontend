@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useActivities } from '../../context/ActivitiesContext';
+import LimitDailyHoursButton from './LimitDailyHoursButton';
 import './Header.css';
 
 export default function Header() {
   const [userEmail, setUserEmail] = useState('usuario@email.com');
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { activities } = useActivities();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,6 +50,7 @@ export default function Header() {
         </div>
 
         <div className="user-section">
+          <LimitDailyHoursButton activities={activities} />
           <span>{userEmail}</span>
           <button className="btn-salir" onClick={handleLogoutClick}>
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
