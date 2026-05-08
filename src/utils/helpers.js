@@ -31,10 +31,24 @@ export function formatShortDate(isoDate) {
 }
 
 export function formatHours(hours) {
-  if (hours === null || hours === undefined) return '0';
-  const num = Number(hours);
+  if (hours === null || hours === undefined || hours === '') return '0';
+  
+  // Convertir a número, manejando strings con formato incorrecto
+  let num = Number(hours);
+  
+  // Si la conversión falla, intentar limpiar el string
+  if (isNaN(num)) {
+    // Remover ceros a la izquierda y convertir
+    const cleaned = String(hours).replace(/^0+/, '') || '0';
+    num = Number(cleaned);
+  }
+  
+  // Si aún no es un número válido, retornar 0
+  if (isNaN(num)) return '0';
+  
   // Si es un número entero, mostrarlo sin decimales
   if (Number.isInteger(num)) return num.toString();
-  // Si tiene decimales, mostrar máximo 1 decimal
+  
+  // Si tiene decimales, mostrar máximo 1 decimal y remover .0 al final
   return num.toFixed(1).replace(/\.0$/, '');
 }
