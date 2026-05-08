@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { formatDate, validarExcededeLimite } from '../../utils/helpers';
 import { useActivities } from '../../context/ActivitiesContext';
@@ -19,6 +19,7 @@ export default function SubtaskModal({ open, parentActivity, editingSubtask, onC
     totalHours: 0
   });
   const [pendingData, setPendingData] = useState(null);
+  const firstInputRef = useRef(null);
 
   const { setError, setSuccess, clearField, clearAll, getFieldClass, getErrorMsg } = useFormValidation();
   const { activities, limiteDiario, actualizarLimite } = useActivities();
@@ -38,6 +39,21 @@ export default function SubtaskModal({ open, parentActivity, editingSubtask, onC
       setNombre(''); setFecha(''); setHoras('');
     }
   }, [open, editingSubtask]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    firstInputRef.current?.focus();
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [open, onClose]);
 
   function validate(fieldId, vals = {}) {
     const n = vals.nombre ?? nombre;
@@ -146,9 +162,9 @@ export default function SubtaskModal({ open, parentActivity, editingSubtask, onC
 
   return (
     <>
-      <div className={`sub-overlay${open ? ' open' : ''}`} onClick={handleOverlayClick}>
-        <div className={`sub-modal${shaking ? ' shake' : ''}`}>
-          <h3>{editingSubtask ? 'Editar subtarea' : 'Nueva subtarea'}</h3>
+      <div className={`sub-overlay${open ? ' open' : ''}`} onClick={handleOverlayClick} aria-hidden={!open}>
+        <div className={`sub-modal${shaking ? ' shake' : ''}`} role="dialog" aria-modal="true" aria-labelledby="subtask-modal-title">
+          <h3 id="subtask-modal-title">{editingSubtask ? 'Editar subtarea' : 'Nueva subtarea'}</h3>
           <p className="sub-parent">
             Actividad: <strong>{parentActivity?.titulo || '—'}</strong>
           </p>
@@ -160,6 +176,7 @@ export default function SubtaskModal({ open, parentActivity, editingSubtask, onC
             <input
               type="text"
               id="sf-nombre"
+              ref={firstInputRef}
               placeholder="Ej: Leer capítulo 3, Resolver ejercicios 4-10…"
               value={nombre}
               onChange={e => { setNombre(e.target.value); clearField('sub-field-nombre'); }}

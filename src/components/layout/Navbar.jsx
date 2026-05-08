@@ -50,6 +50,7 @@ export default function NavBar() {
         <button
           key={tab.key}
           className={`nav-tab${location.pathname === tab.key ? " active" : ""}`}
+          aria-current={location.pathname === tab.key ? 'page' : undefined}
           onClick={() => navigate(tab.key)}
         >
           {tab.icon}

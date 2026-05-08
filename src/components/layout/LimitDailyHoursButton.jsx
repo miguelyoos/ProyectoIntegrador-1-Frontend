@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useActivities } from '../../context/ActivitiesContext';
 import ReduceLimitDialog from '../hoy/ReduceLimitDialog';
 import { calcularHorasSubtareasHoy } from '../../utils/helpers';
@@ -12,6 +12,8 @@ export default function LimitDailyHoursButton({ activities }) {
     open: false,
     newLimit: limiteDiario
   });
+  const limitButtonRef = useRef(null);
+  const limitInputRef = useRef(null);
 
   const horasSubtareasHoy = calcularHorasSubtareasHoy(activities);
 
@@ -51,12 +53,32 @@ export default function LimitDailyHoursButton({ activities }) {
     setShowMenu(false);
   };
 
+  useEffect(() => {
+    if (!showMenu) return;
+
+    limitInputRef.current?.focus();
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        setShowMenu(false);
+        limitButtonRef.current?.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showMenu]);
+
   return (
     <>
       <div className="limit-daily-hours-button">
         <button
           className="limit-btn"
           title={`Límite diario: ${limiteDiario}h`}
+          aria-label={`Límite diario ${limiteDiario} horas`}
+          aria-expanded={showMenu}
+          aria-controls="limit-menu"
+          ref={limitButtonRef}
           onClick={() => setShowMenu(!showMenu)}
         >
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -67,11 +89,12 @@ export default function LimitDailyHoursButton({ activities }) {
         </button>
 
         {showMenu && (
-          <div className="limit-menu">
+          <div className="limit-menu" id="limit-menu" role="dialog" aria-modal="false" aria-label="Configurar límite diario">
             <div className="limit-menu-header">
               <h4>Límite diario de estudio</h4>
               <button
                 className="limit-menu-close"
+                aria-label="Cerrar menú de límite diario"
                 onClick={() => setShowMenu(false)}
               >
                 ✕
@@ -89,6 +112,7 @@ export default function LimitDailyHoursButton({ activities }) {
                 <input
                   id="limit-input"
                   type="number"
+                  ref={limitInputRef}
                   min="0.5"
                   step="0.5"
                   value={inputValue}

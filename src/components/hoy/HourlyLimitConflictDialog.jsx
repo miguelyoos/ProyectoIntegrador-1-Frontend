@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import './HourlyLimitConflictDialog.css';
 
 export default function HourlyLimitConflictDialog({
@@ -10,16 +10,33 @@ export default function HourlyLimitConflictDialog({
   onReschedule,
   onCancel
 }) {
+  const cancelButtonRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    cancelButtonRef.current?.focus();
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        onCancel();
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [open, onCancel]);
+
   if (!open) return null;
 
   const overageHours = (totalHours - limitHours).toFixed(1);
 
   return (
     <div className="hourly-conflict-overlay" onClick={onCancel}>
-      <div className="hourly-conflict-modal" onClick={e => e.stopPropagation()}>
+      <div className="hourly-conflict-modal" role="dialog" aria-modal="true" aria-labelledby="hourly-conflict-title" onClick={e => e.stopPropagation()}>
         <div className="hourly-conflict-icon">⏰</div>
         
-        <h2 className="hourly-conflict-title">
+        <h2 className="hourly-conflict-title" id="hourly-conflict-title">
           Límite diario excedido
         </h2>
         
@@ -57,6 +74,7 @@ export default function HourlyLimitConflictDialog({
         <button
           className="hourly-conflict-cancel"
           onClick={onCancel}
+          ref={cancelButtonRef}
         >
           Cancelar
         </button>

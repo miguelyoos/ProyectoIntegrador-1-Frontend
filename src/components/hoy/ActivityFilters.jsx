@@ -43,6 +43,7 @@ export default function ActivityFilters({ search, onSearch, tipo, onTipo, priori
       </div>
 
       <DropdownFilter
+        label="Filtrar por tipo"
         value={tipo}
         options={TIPO_OPTIONS}
         onChange={onTipo}
@@ -54,6 +55,7 @@ export default function ActivityFilters({ search, onSearch, tipo, onTipo, priori
       />
 
       <DropdownFilter
+        label="Filtrar por prioridad"
         value={prioridad}
         options={PRIORIDAD_OPTIONS}
         onChange={onPrioridad}
@@ -68,6 +70,7 @@ export default function ActivityFilters({ search, onSearch, tipo, onTipo, priori
       />
 
       <DropdownFilter
+        label="Ordenar actividades"
         value={orden}
         options={ORDEN_OPTIONS}
         onChange={onOrden}
