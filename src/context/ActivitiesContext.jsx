@@ -129,13 +129,14 @@ export function ActivitiesProvider({ children }) {
       const nueva = {
         id: newId,
         titulo: data.titulo,
+        tipo: data.tipo,
         materia: data.materia,
+        desc: data.desc || '',
         fecha: data.fecha,
         prioridad: data.prioridad,
-        tipo: data.tipo,
-        estado: 'pendiente',
+        estado: data.estado || 'pendiente',
         horasEst: data.horasEst || 0,
-        horasComp: 0,
+        horasComp: data.horasComp || 0,
         subtasks: []
       };
       setActivities((prev) => {

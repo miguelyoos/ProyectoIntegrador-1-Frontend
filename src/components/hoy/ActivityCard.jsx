@@ -51,14 +51,14 @@ export default function ActivityCard({
 
   const [nuevoEstado, setNuevoEstado] = React.useState(activity.estado);
 
-  const [nota, setNota] = React.useState(activity.nota || "");
+  const [desc, setDesc] = React.useState(activity.desc || "");
   async function handleUpdate() {
   try {
 
     await updateActivity(activity.id, {
       ...activity,
       estado: nuevoEstado,
-      nota: nota,
+      desc: desc,
     });
 
     toast.success("Actividad actualizada correctamente");
@@ -196,8 +196,8 @@ export default function ActivityCard({
 
           <textarea
             placeholder="Escribe una nota..."
-            value={nota}
-            onChange={(e) => setNota(e.target.value)}
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
           />
 
           <button onClick={handleUpdate}>
